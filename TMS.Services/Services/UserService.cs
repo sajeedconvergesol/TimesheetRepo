@@ -46,7 +46,5 @@ namespace TMS.Services.Services
         public async Task<ApplicationUser> GetByUserName(string userName) => await _iUserRepository.GetByUserName(userName);
         public async Task<bool> IsExists(string email)
             => await _iUserRepository.IsExists(email);
-        public async Task<IEnumerable<ApplicationUser>> GetActiveUsers(string roleId)
-            => await _iUserRepository.GetActiveUsers(roleId);
     }
 }
