@@ -68,7 +68,6 @@ namespace TMS.API.Controllers
                     else
                     {
                         var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false,lockoutOnFailure: true);
-                        //var result = await _IUserService.AuthenticateAsync(model.Email, model.Password);
                         if (result.Succeeded)
                         {
                             if (user != null)
