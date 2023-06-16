@@ -20,7 +20,7 @@ namespace TMS.Core
             get => _Id;
             set => _Id = value;
         }
-        public string ExperienceLevelName
+        public string CategoryName
         {
             get => _CategoryName;
             set =>_CategoryName=value;
