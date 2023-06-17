@@ -20,10 +20,51 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddSwaggerGen(c => {
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Assessment API",
+        Description = "Assessment API",
+        //TermsOfService = new Uri("https://convergesolution.com/"),
+        //License = new OpenApiLicense
+        //{
+        //    Name = "Use under LICX",
+        //    Url = new Uri("https://convergesolution.com/")
+        //}
+    });
+    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Description =
+        "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+    c.OperationFilter<SecurityRequirementsOperationFilter>();
+    //c.DocumentFilter<RemoveSchemasFilter>();
+});
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
 // Add services to the container.
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
@@ -75,6 +116,28 @@ configuration.WriteTo.Console()
 //{
 //    options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
 //});
+
+#region CORS
+// Add service and create Policy with options
+//builder.Services.AddCors(options =>
+//{
+//    //options.AddPolicy("CorsPolicy", p => p.WithOrigins(Configuration["CORSUrl:Url"])
+//    //        .AllowAnyMethod()
+//    //        .AllowAnyHeader()
+//    //        .AllowCredentials());
+
+//    options.AddPolicy("CorsPolicy", p => p.WithOrigins(builder.Configuration.GetSection("CORSUrl").Value)
+//                             .AllowAnyMethod()
+//                             .AllowAnyHeader()
+//                             .AllowCredentials());
+//});
+builder.Services.AddCors();
+#endregion
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -96,65 +159,7 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 });
-#region CORS
-// Add service and create Policy with options
-//builder.Services.AddCors(options =>
-//{
-//    //options.AddPolicy("CorsPolicy", p => p.WithOrigins(Configuration["CORSUrl:Url"])
-//    //        .AllowAnyMethod()
-//    //        .AllowAnyHeader()
-//    //        .AllowCredentials());
 
-//    options.AddPolicy("CorsPolicy", p => p.WithOrigins(builder.Configuration.GetSection("CORSUrl").Value)
-//                             .AllowAnyMethod()
-//                             .AllowAnyHeader()
-//                             .AllowCredentials());
-//});
-builder.Services.AddCors();
-#endregion
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c => {
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Version = "v1",
-        Title = "Assessment API",
-        Description = "Assessment API",
-        //TermsOfService = new Uri("https://convergesolution.com/"),
-        //License = new OpenApiLicense
-        //{
-        //    Name = "Use under LICX",
-        //    Url = new Uri("https://convergesolution.com/")
-        //}
-    });
-    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-    {
-        Description =
-        "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-        BearerFormat = "JWT"
-    });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
-                }
-            },
-            new string[]{}
-        }
-    });
-    c.OperationFilter<SecurityRequirementsOperationFilter>();
-    //c.DocumentFilter<RemoveSchemasFilter>();
-});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -165,7 +170,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
