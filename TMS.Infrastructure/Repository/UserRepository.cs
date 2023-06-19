@@ -144,6 +144,7 @@ namespace TMS.Infrastructure.Repository
         public async Task<IdentityResult> UpdateUser(ApplicationUser obUser)
         {
             obUser.UpdatedOn = DateTime.Now;
+
             var result = await _userManager.UpdateAsync(obUser);
             return result;
         }
