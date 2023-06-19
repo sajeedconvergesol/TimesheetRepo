@@ -24,6 +24,5 @@ namespace TMS.Services.Interfaces
         Task<ApplicationUser> GetById(string id);
         Task<ApplicationUser> GetByUserName(string userName);
         Task<bool> IsExists(string email);
-        Task<IEnumerable<ApplicationUser>> GetActiveUsers(string roleId);
     }
 }

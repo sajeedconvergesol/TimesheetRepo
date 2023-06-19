@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMS.Core;
 using TMS.Infrastructure.Interfaces;
 
 namespace TMS.Infrastructure.Repository
@@ -18,12 +19,12 @@ namespace TMS.Infrastructure.Repository
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<IdentityRole>> GetAllRoles()
+        public async Task<IEnumerable<ApplicationRole>> GetAllRoles()
         {
             var result = _unitOfWork.Context.Roles;
             return await result.ToListAsync();
         }
-        public IdentityRole GetByRoleName(string roleName)
+        public ApplicationRole GetByRoleName(string roleName)
         {
             var role = _unitOfWork.Context.Roles.Where(x => x.Name == roleName).FirstOrDefault();
             return role;

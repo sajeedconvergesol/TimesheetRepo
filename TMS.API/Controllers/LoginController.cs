@@ -67,7 +67,7 @@ namespace TMS.API.Controllers
                     }
                     else
                     {
-                        var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false,lockoutOnFailure: true);
+                        var result = await _signInManager.PasswordSignInAsync(user, model.Password, false,lockoutOnFailure: true);
                         if (result.Succeeded)
                         {
                             if (user != null)
@@ -157,7 +157,7 @@ namespace TMS.API.Controllers
 
             var claims = new[]
             {
-                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                  new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

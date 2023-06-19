@@ -1,6 +1,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -20,11 +22,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Add services to the container.
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
     // Configure identity options here.
     options.Password.RequireDigit = false;
@@ -42,7 +46,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.SignIn.RequireConfirmedEmail = false;
     options.SignIn.RequireConfirmedPhoneNumber = false;
 }).AddEntityFrameworkStores<ApplicationDbContext>()
- .AddDefaultTokenProviders();
+ .AddDefaultTokenProviders()
+   .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, int>>()
+    .AddRoleStore<RoleStore<ApplicationRole, ApplicationDbContext, int>>();
 builder.Services.AddDbContext<ApplicationDbContext>(opts => opts.UseSqlServer(builder.Configuration.GetSection("ConnectionString:TimeSheetDB").Value));
 
 #region Service Scope
@@ -53,6 +59,17 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IInvoiceDetailRepository, InvoiceDetailRepository>();
 builder.Services.AddScoped<IInvoiceDetailService, InvoiceDetailService>();
+builder.Services.AddScoped<ITimesheetMasterRepository, TimesheetMasterRepository>();
+builder.Services.AddScoped<ITimesheetMasterService, TimesheetMasterService>();
+builder.Services.AddScoped<ITimesheetDetailsRepository, TimesheetDetailsRepository>();
+builder.Services.AddScoped<ITimesheetDetailsService, TimesheetDetailsService>();
+builder.Services.AddScoped<ITimesheetApprovalsRepository, TimesheetApprovalsRepository>();
+builder.Services.AddScoped<ITimesheetApprovalsService, TimesheetApprovalsService>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ITaskAssignmentRepository, TaskAssignmentRepository>();
+builder.Services.AddScoped<ITaskAssignmentService, TaskAssignmentService>();
+
 #endregion
 
 // Automapper

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TMS.Core
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser<int>
     {
         //Extended Properties		
         public string? FirstName { get; set; }
@@ -23,12 +23,10 @@ namespace TMS.Core
         public string? MobileNo { get; set; }
         public string? Gender { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public string? ManagerId { get; set; }
+        public int? ManagerId { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
         public string? UpdatedBy { get; set; }
-
-        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
     }
 }

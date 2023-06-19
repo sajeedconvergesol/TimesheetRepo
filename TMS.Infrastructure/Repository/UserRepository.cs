@@ -180,11 +180,5 @@ namespace TMS.Infrastructure.Repository
             }
             return IsExists;
         }
-        public async Task<IEnumerable<ApplicationUser>> GetActiveUsers(string roleId)
-        {
-            var result = _unitOfWork.Context.Users
-                .Where(x => x.IsActive && x.UserRoles.Any(s => s.RoleId == roleId));
-            return await result.ToListAsync();
-        }
     }
 }
