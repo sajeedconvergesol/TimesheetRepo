@@ -185,7 +185,7 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-                IdentityResult result = await _IUserService.CreateAsync(newUser, newUser.PasswordHash, "manager");
+                IdentityResult result = await _IUserService.CreateAsync(newUser, newUser.PasswordHash, "Developers");
                 if(!result.Succeeded)
                 {
                     var er = "";
