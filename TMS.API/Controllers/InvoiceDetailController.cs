@@ -104,13 +104,13 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
-        [HttpPost("CreateProject")]
-        public async Task<ResponseDTO<long>> CreateTasks(InvoiceDetails invoiceDetails)
+        [HttpPost("AddInvoiceDetails")]
+        public async Task<ResponseDTO<int>> AddInvoiceDetails(InvoiceDetails invoiceDetails)
         {
-            ResponseDTO<long> response = new ResponseDTO<long>();
+            ResponseDTO<int> response = new ResponseDTO<int>();
             int StatusCode = 0;
             bool isSuccess = false;
-            long Response = 0;
+            int Response = 0;
             string Message = "";
             string ExceptionMessage = "";
             try
@@ -146,17 +146,17 @@ namespace TMS.API.Controllers
             return response;
         }
         [HttpPut]
-        public async Task<ResponseDTO<long>> UpdateTask(InvoiceDetails invoiceDetails)
+        public async Task<ResponseDTO<int>> UpdateTask(InvoiceDetails invoiceDetails)
         {
-            ResponseDTO<long> response = new ResponseDTO<long>();
-            long StatusCode = 0;
+            ResponseDTO<int> response = new ResponseDTO<int>();
+            int StatusCode = 0;
             bool isSuccess = false;
-            long Response = 0;
+            int Response = 0;
             string Message = "";
             string ExceptionMessage = "";
             try
             {
-                long entry = await _invoiceDetailService.Update(invoiceDetails);
+                int entry = await _invoiceDetailService.Update(invoiceDetails);
                 if (entry == null)
                 {
                     isSuccess = false;
@@ -173,9 +173,6 @@ namespace TMS.API.Controllers
             }
             catch (Exception ex)
             {
-
-
-
                 isSuccess = false;
                 StatusCode = 500;
                 Message = "Failed while fetching data.";
