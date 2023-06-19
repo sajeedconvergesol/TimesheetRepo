@@ -44,7 +44,7 @@ namespace TMS.Infrastructure.Repository
         public async Task<Project> GetById(int id)
         {
 
-                var data = await _unitOfWork.Context.Projects.FindAsync();
+                var data = await _unitOfWork.Context.Projects.FindAsync(id);
                 await _unitOfWork.Context.SaveChangesAsync();
                 return data;
             }

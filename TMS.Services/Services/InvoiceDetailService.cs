@@ -18,12 +18,12 @@ namespace TMS.Services.Services
             _InvoiceDetailRepository = invoiceDetailRepository;
         }
 
-        public Task<long> Add(InvoiceDetails invoiceDetails)
+        public Task<int> Add(InvoiceDetails invoiceDetails)
         {
            return _InvoiceDetailRepository.Add(invoiceDetails);
         }
 
-        public Task<long> Delete(int id)
+        public Task<int> Delete(int id)
         {
             return _InvoiceDetailRepository.Delete(id);
 
@@ -41,7 +41,7 @@ namespace TMS.Services.Services
 
         }
 
-        public Task<long> Update(InvoiceDetails invoiceDetails)
+        public Task<int> Update(InvoiceDetails invoiceDetails)
         {
             return _InvoiceDetailRepository.Update(invoiceDetails);
         }

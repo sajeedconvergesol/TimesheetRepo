@@ -17,14 +17,14 @@ namespace TMS.Infrastructure.Repository
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<long> Add(InvoiceDetails invoiceDetails)
+        public async Task<int> Add(InvoiceDetails invoiceDetails)
         {
             _unitOfWork.Context.InvoiceDetails.Add(invoiceDetails);
             await _unitOfWork.Context.SaveChangesAsync();
             return invoiceDetails.Id;
         }
 
-        public async Task<long> Delete(int id)
+        public async Task<int> Delete(int id)
         {
             InvoiceDetails invoiceDetails = await _unitOfWork.Context.InvoiceDetails.FindAsync(id);
             _unitOfWork.Context.InvoiceDetails.Remove(invoiceDetails);
@@ -46,7 +46,7 @@ namespace TMS.Infrastructure.Repository
             return data;
         }
 
-        public async Task<long> Update(InvoiceDetails invoiceDetails)
+        public async Task<int> Update(InvoiceDetails invoiceDetails)
         {
             int entry = 0;
             InvoiceDetails olddata = await _unitOfWork.Context.InvoiceDetails.FindAsync(invoiceDetails.Id);
