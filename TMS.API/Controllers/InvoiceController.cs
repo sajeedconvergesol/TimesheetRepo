@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using TMS.API.DTOs;
 using TMS.Core;
 using TMS.Infrastructure.Interfaces;
+using TMS.Services.Interfaces;
+using TMS.Services.Services;
 
 namespace TMS.API.Controllers
 {
@@ -12,16 +14,21 @@ namespace TMS.API.Controllers
     {
         private readonly IInvoiceService _invoiceService;
         private readonly ILogger _logger;
+        private readonly IInvoiceDetailService _invoiceDetailService;
 
 
-        public InvoiceController(IInvoiceService invoiceService, ILogger logger)
+        public InvoiceController(IInvoiceService invoiceService, ILogger logger, IInvoiceDetailService invoiceDetailService)
         {
             _logger = logger;
             _invoiceService = invoiceService;
+            _invoiceDetailService = invoiceDetailService;
+
         }
 
+        #region GetInvoiceById
+
         [HttpGet("{id}")]
-        public async Task<ResponseDTO<Invoice>> GetProject(int id)
+        public async Task<ResponseDTO<Invoice>> GetInvoice(int id)
         {
             ResponseDTO<Invoice> response = new ResponseDTO<Invoice>();
             int StatusCode = 0;
@@ -61,8 +68,13 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
-        [HttpGet("GetAll")]
-        public async Task<ResponseDTO<IEnumerable<Invoice>>> GetTasks()
+
+        #endregion
+
+        #region GetAllInvoice
+
+        [HttpGet("GetAllInvoice")]
+        public async Task<ResponseDTO<IEnumerable<Invoice>>> GetAllInvoice()
         {
             ResponseDTO<IEnumerable<Invoice>> response = new ResponseDTO<IEnumerable<Invoice>>();
             int StatusCode = 0;
@@ -102,17 +114,29 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
-        [HttpPost("CreateProject")]
-        public async Task<ResponseDTO<int>> CreateTasks(Invoice invoice)
+
+        #endregion
+
+        #region AddInvoice
+
+        [HttpPost("AddInvoice")]
+        public async Task<ResponseDTO<InvoiceResponseDTO>> AddInvoice(InvoiceRequestDTO invoiceRequestDTO)
         {
-            ResponseDTO<int> response = new ResponseDTO<int>();
+            ResponseDTO<InvoiceResponseDTO> response = new ResponseDTO<InvoiceResponseDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            int Response = 0;
+            InvoiceResponseDTO Response = 0;
             string Message = "";
             string ExceptionMessage = "";
             try
             {
+
+                Invoice invoice = new Invoice
+                {
+                    InvoiceDate = invoiceRequestDTO.InvoiceDate,
+                    TotalAmount = invoiceRequestDTO.TotalAmount,
+                };
+
                 var result = await _invoiceService.Add(invoice);
                 if (result == null)
                 {
@@ -143,8 +167,12 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
+
+        #endregion
+
+        #region UpdateInvoice
         [HttpPut]
-        public async Task<ResponseDTO<int>> UpdateTask(Invoice invoice)
+        public async Task<ResponseDTO<int>> UpdateInvoice(Invoice invoice)
         {
             ResponseDTO<int> response = new ResponseDTO<int>();
             int StatusCode = 0;
@@ -188,10 +216,12 @@ namespace TMS.API.Controllers
             return response;
         }
 
+        #endregion
 
+        #region DeleteInvoice
 
         [HttpDelete("{id}")]
-        public async Task<ResponseDTO<int>> DeleteTask(int id)
+        public async Task<ResponseDTO<int>> DeleteInvoice(int id)
         {
             ResponseDTO<int> response = new ResponseDTO<int>();
             int StatusCode = 0;
@@ -231,5 +261,9 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
+
+        #endregion
+      
     }
+
 }
