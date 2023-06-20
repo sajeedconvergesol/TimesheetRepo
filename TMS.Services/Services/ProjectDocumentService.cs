@@ -42,5 +42,9 @@ namespace TMS.Services.Services
         {
             return _projectDetailsRepository.Update(projectDocuments);
         }
+        public Task<List<ProjectDocuments>> GetByProjectId (int projectId)
+        {
+            return _projectDetailsRepository.GetByProjectId(projectId);
+        }
     }
 }

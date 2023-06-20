@@ -14,6 +14,7 @@ namespace TMS.Infrastructure.Interfaces
         Task<int> Add(ProjectDocuments projectDocuments);
         Task<int> Update(ProjectDocuments projectDocuments);
         Task<int> Delete(int id);
+        Task<List<ProjectDocuments>> GetByProjectId(int projectId);
 
     }
 }
