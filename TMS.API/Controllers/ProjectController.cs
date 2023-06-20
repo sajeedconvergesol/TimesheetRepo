@@ -125,6 +125,7 @@ namespace TMS.API.Controllers
             try
             {
                 var result = await _projectService.Add(project);
+                
                 if (result == null)
                 {
                     isSuccess = false;
@@ -138,6 +139,7 @@ namespace TMS.API.Controllers
                     Message = "Data has been created";
                     Response = result;
                 }
+
             }
             catch (Exception ex)
             {
@@ -263,9 +265,10 @@ namespace TMS.API.Controllers
         }
         #endregion
 
+        #region UploadDocumentOfProject
 
-        [HttpPost("{id}/UploadProjectDocument")]
-        public async Task<ResponseDTO<int>> UploadProjectDocument(int id ,ProjectDocuments project)
+       [HttpPost("{id}/UploadProjectDocument")]
+        public async Task<ResponseDTO<int>> UploadProjectDocument(int id ,ProjectDocuments projectDocument)
         {
             ResponseDTO<int> response = new ResponseDTO<int>();
             int StatusCode = 0;
@@ -275,16 +278,16 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-                var projectId = await _projectService.GetById(id);
-                if (projectId == null)
+                var project = await _projectService.GetById(id);
+                if (project == null)
                 {
                     isSuccess = false;
                     StatusCode = 400;
-                    Message = "Invalid Project Id.";
+                    Message = "Invalid Project.";
                 }
                 else
                 {
-                    var createDocument = await _projectDocumentService.Add(project);
+                    var createDocument = await _projectDocumentService.Add(projectDocument);
                     if(createDocument != null) { 
                     StatusCode = 200;
                     isSuccess = true;
@@ -309,6 +312,7 @@ namespace TMS.API.Controllers
             return response;
         }
 
+        #endregion
     }
 
 }

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using TMS.API.DTOs;
 using TMS.Core;
 using TMS.Infrastructure.Interfaces;
+using TMS.Services.Interfaces;
+using TMS.Services.Services;
 
 namespace TMS.API.Controllers
 {
@@ -12,12 +14,15 @@ namespace TMS.API.Controllers
     {
         private readonly IInvoiceService _invoiceService;
         private readonly ILogger _logger;
+        private readonly IInvoiceDetailService _invoiceDetailService;
 
 
-        public InvoiceController(IInvoiceService invoiceService, ILogger logger)
+        public InvoiceController(IInvoiceService invoiceService, ILogger logger, IInvoiceDetailService invoiceDetailService)
         {
             _logger = logger;
             _invoiceService = invoiceService;
+            _invoiceDetailService = invoiceDetailService;
+
         }
 
         #region GetInvoiceById
@@ -125,6 +130,13 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
+                var timeSheetMasterId = invoice.TimeSheetMasterId;
+                var categoryId = invoice.CategoryId;
+                if(timeSheetMasterId == null && categoryId == null)
+                {
+
+                }
+
                 var result = await _invoiceService.Add(invoice);
                 if (result == null)
                 {
@@ -251,5 +263,62 @@ namespace TMS.API.Controllers
         }
 
         #endregion
+
+
+        #region InvoiceDetailsAdd
+
+
+        [HttpPost("{id}/AddInvoiceDetails")]
+        public async Task<ResponseDTO<int>> AddInvoiceDetails(int id, InvoiceDetails invoiceDetails)
+        {
+            ResponseDTO<int> response = new ResponseDTO<int>();
+            int StatusCode = 0;
+            bool isSuccess = false;
+            int Response = 0;
+            string Message = "";
+            string ExceptionMessage = "";
+            try
+            {
+                var invoiceId = await _invoiceService.GetById(id);
+                if (invoiceId == null)
+                {
+                    isSuccess = false;
+                    StatusCode = 400;
+                    Message = "Invalid Project Id.";
+                }
+                else
+                {
+                    var createInvoiceDetails = await _invoiceDetailService.Add(invoiceDetails);
+                    if (createInvoiceDetails != null)
+                    {
+                        StatusCode = 200;
+                        isSuccess = true;
+                        Message = "Data has been created";
+                        Response = createInvoiceDetails;
+
+                        
+                       
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                isSuccess = false;
+                StatusCode = 500;
+                Message = "Failed while fetching data.";
+                ExceptionMessage = ex.Message.ToString();
+                _logger.LogError(ex.ToString(), ex);
+            }
+            response.StatusCode = StatusCode;
+            response.IsSuccess = isSuccess;
+            response.Response = Response;
+            response.Message = Message;
+            response.ExceptionMessage = ExceptionMessage;
+            return response;
+        }
+
+        #endregion
+
     }
+
 }
