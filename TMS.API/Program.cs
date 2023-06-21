@@ -44,7 +44,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 }).AddEntityFrameworkStores<ApplicationDbContext>()
  .AddDefaultTokenProviders();
 builder.Services.AddDbContext<ApplicationDbContext>(opts => opts.UseSqlServer(builder.Configuration.GetSection("ConnectionString:TimeSheetDB").Value));
-
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("EmailSender"));
 #region Service Scope
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -53,6 +53,7 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IInvoiceDetailRepository, InvoiceDetailRepository>();
 builder.Services.AddScoped<IInvoiceDetailService, InvoiceDetailService>();
+builder.Services.AddTransient<IMailService, MailService>();
 #endregion
 
 // Automapper

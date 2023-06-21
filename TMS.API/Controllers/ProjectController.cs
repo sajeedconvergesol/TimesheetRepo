@@ -18,13 +18,18 @@ namespace TMS.API.Controllers
     {
         private readonly IProjectDocumentService _projectDocumentService;
         private readonly IProjectService _projectService;
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
+
+        public ProjectController(IProjectService projectService, ILogger<ProjectController> logger,
+            IProjectDocumentService projectDocumentService, IConfiguration configuration,IMapper mapper)
         {
             _mapper = mapper;
             _projectDocumentService = projectDocumentService;
             _projectService = projectService;
             _logger = logger;
+            _configuration = configuration;
             _configuration = configuration;
         }
 
@@ -300,8 +305,8 @@ namespace TMS.API.Controllers
 
                             StatusCode = 200;
                             isSuccess = true;
-                            Message = "Document Added";
-                            Response = "Document Added To Db And Also moved To Path";
+                            Message = "Project document uploaded successfully";
+                            Response = "Project document uploaded successfully";
                         }
                     }
                 }
