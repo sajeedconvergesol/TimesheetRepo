@@ -62,5 +62,9 @@ namespace TMS.Infrastructure.Repository
             }
             return entry;
         }
+        public async Task<List<ProjectDocuments>> GetByProjectId(int projectId)
+        {
+            return _unitOfWork.Context.ProjectDocuments.Where(z => z.ProjectId == projectId).ToList();
+        }
     }
 }
