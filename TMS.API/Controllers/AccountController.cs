@@ -227,7 +227,7 @@ namespace TMS.API.Controllers
                     email.Subject = "Account Created at TimeSheet Management System";
 
                     string wwwrootPath = _webHostEnvironment.WebRootPath;
-                    string templateFilePath = Path.Combine(wwwrootPath, "Email_templates/Registration_Email_template.html");
+                    string templateFilePath = Path.Combine(wwwrootPath, "EmailTemplates/Registration_Email_template.html");
                     string htmlTemplate = await System.IO.File.ReadAllTextAsync(templateFilePath);
                     htmlTemplate = htmlTemplate.Replace("#FullName#", newUser.FirstName + " " + newUser.LastName).Replace("#Password#", newUser.PasswordHash).Replace("#Username#", newUser.UserName).Replace("#Email#", newUser.Email);
 
@@ -486,7 +486,7 @@ namespace TMS.API.Controllers
                     email.Subject = "Reset Password at TimeSheet Management System";
 
                     string wwwrootPath = _webHostEnvironment.WebRootPath;
-                    string templateFilePath = Path.Combine(wwwrootPath, "Email_templates/Reset_Password_Email_template.html");
+                    string templateFilePath = Path.Combine(wwwrootPath, "EmailTemplates/Reset_Password_Email_template.html");
                     string htmlTemplate = await System.IO.File.ReadAllTextAsync(templateFilePath);
                     htmlTemplate = htmlTemplate.Replace("#FullName#", user.FirstName + " " + user.LastName).Replace("#Password#", newPassword);
 
