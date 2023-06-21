@@ -1,11 +1,15 @@
 ﻿using AutoMapper;
 using Azure.Core;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using MimeKit.Text;
+using MimeKit;
 using System.Diagnostics.Metrics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,11 +19,13 @@ using TMS.API.Helpers;
 using TMS.Core;
 using TMS.Services.Interfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using TMS.Services.Services;
 
 namespace TMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -29,9 +35,15 @@ namespace TMS.API.Controllers
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
+        private readonly IUserResolverService _userResolverService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IMailService _mailService;
 
         public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-           IUserService iUserService, IConfiguration config, IMapper mapper, ILogger<AccountController> logger, RoleManager<ApplicationRole> roleManager)
+           IUserService iUserService, IConfiguration config,
+           IMapper mapper, ILogger<AccountController> logger,
+           RoleManager<ApplicationRole> roleManager, IUserResolverService userResolverService,
+           IWebHostEnvironment webHostEnvironment, IMailService mailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -40,8 +52,12 @@ namespace TMS.API.Controllers
             _mapper = mapper;
             _logger = logger;
             _roleManager = roleManager;
+            _userResolverService = userResolverService;
+            _webHostEnvironment = webHostEnvironment;
+            _mailService = mailService;
         }
         //Post : api/Account
+        [AllowAnonymous]
         [HttpPost("SignIn")]
         public async Task<ResponseDTO<LoginResponseDTO>> SignIn([FromBody] LoginRequestDTO model)
         {
@@ -72,7 +88,7 @@ namespace TMS.API.Controllers
                     }
                     else
                     {
-                        var result = await _signInManager.PasswordSignInAsync(user, model.Password, false,lockoutOnFailure: true);
+                        var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, lockoutOnFailure: true);
                         if (result.Succeeded)
                         {
                             if (user != null)
@@ -186,12 +202,12 @@ namespace TMS.API.Controllers
             try
             {
                 IdentityResult result = await _IUserService.CreateAsync(newUser, newUser.PasswordHash, "Developers");
-                if(!result.Succeeded)
+                if (!result.Succeeded)
                 {
                     var er = "";
                     foreach (var error in result.Errors)
                     {
-                        er += " " + error.Description+" [+] ";
+                        er += " " + error.Description + " [+] ";
                     }
                     isSuccess = false;
                     StatusCode = 400;
@@ -203,6 +219,35 @@ namespace TMS.API.Controllers
                     isSuccess = true;
                     Message = "Account Created.";
                     _logger.LogInformation("Account Created successful");
+
+                    //send Email That account has been Created
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse("jay.convergesol@gmail.com"));
+                    email.To.Add(MailboxAddress.Parse(newUser.Email));
+                    email.Subject = "Account Created at TimeSheet Management System";
+
+                    string wwwrootPath = _webHostEnvironment.WebRootPath;
+                    string templateFilePath = Path.Combine(wwwrootPath, "Email_templates/Registration_Email_template.html");
+                    string htmlTemplate = await System.IO.File.ReadAllTextAsync(templateFilePath);
+                    htmlTemplate = htmlTemplate.Replace("#FullName#", newUser.FirstName + " " + newUser.LastName).Replace("#Password#", newUser.PasswordHash).Replace("#Username#", newUser.UserName).Replace("#Email#", newUser.Email);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = htmlTemplate };
+                    MailData mailData = new MailData
+                    {
+                        EmailBody = htmlTemplate,
+                        EmailSubject = "Account Created at TimeSheet Management System",
+                        EmailToId = newUser.Email,
+                        EmailToName = newUser.FirstName + " " + newUser.LastName
+                    };
+                    var sendMail = _mailService.SendMail(mailData);
+                    if (!sendMail)
+                    {
+                        Message += ", Email Not Send";
+                    }
+                    else
+                    {
+                        Message += ", Email Send";
+                    }
                 }
             }
             catch (Exception error)
@@ -229,8 +274,8 @@ namespace TMS.API.Controllers
             LoginResponseDTO Response = null;
             string Message = "";
             string ExceptionMessage = "";
-            if (User.Identity.Name !=null)
-            { 
+            if (User.Identity.Name != null)
+            {
                 _signInManager.SignOutAsync();
                 StatusCode = 200;
                 isSuccess = true;
@@ -242,7 +287,7 @@ namespace TMS.API.Controllers
             {
                 isSuccess = false;
                 StatusCode = 500;
-                Message = "Failed while Account LogOut. Please Login First";                
+                Message = "Failed while Account LogOut. Please Login First";
             }
 
             response.StatusCode = StatusCode;
@@ -297,7 +342,6 @@ namespace TMS.API.Controllers
         }
 
         [HttpPost("ChangePassword")]
-        [Authorize]
         public async Task<ResponseDTO<string>> ChangePassword(ChangePasswordDTO vmChangePassword)
         {
             ResponseDTO<string> response = new ResponseDTO<string>();
@@ -309,14 +353,15 @@ namespace TMS.API.Controllers
             try
             {
                 var result = await _IUserService.ChangePasswordAsync(vmChangePassword.Email, vmChangePassword.CurrentPassword, vmChangePassword.NewPassword, vmChangePassword.ConfirmPassword);
-                
-                
+
+
                 if (!result)
                 {
                     isSuccess = false;
                     StatusCode = 400;
                     Message = "possible errors: -Email Does not Exists -Current Password Does not match";
-                }else
+                }
+                else
                 {
                     isSuccess = true;
                     StatusCode = 200;
@@ -340,7 +385,6 @@ namespace TMS.API.Controllers
 
         //not working right now 
         [HttpPut("UpdateUser")]
-        [Authorize]
         public async Task<ResponseDTO<string>> UpdateUser(UpdateUserDTO newUser)
         {
             ResponseDTO<string> response = new ResponseDTO<string>();
@@ -352,7 +396,7 @@ namespace TMS.API.Controllers
             try
             {
                 var user = await _IUserService.GetByUserName(User.Identity.Name);
-                if(user != null) 
+                if (user != null)
                 {
                     ApplicationUser UpdatedUser = new ApplicationUser()
                     {
@@ -370,7 +414,7 @@ namespace TMS.API.Controllers
                         PhoneNumber = newUser.PhoneNumber,
                     };
                     IdentityResult result = await _IUserService.UpdateUser(UpdatedUser);
-                    if(!result.Succeeded)
+                    if (!result.Succeeded)
                     {
                         var er = "";
                         foreach (var error in result.Errors)
@@ -405,7 +449,7 @@ namespace TMS.API.Controllers
         }
 
         [HttpPost("ResetPassword")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseDTO<string>> ResetPassword(ResetPasswordDTO resetPass)
         {
             ResponseDTO<string> response = new ResponseDTO<string>();
@@ -417,13 +461,53 @@ namespace TMS.API.Controllers
             try
             {
                 var user = await _IUserService.GetUserByEmail(resetPass.Email);
+                if (user == null)
+                {
+                    response.StatusCode = 400;
+                    response.IsSuccess = false;
+                    response.Message = "Invalid Email Address, Looks like You have'nt created Account. ";
+                    return response;
+                }
+
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var result = await _IUserService.ResetPasswordAsync(user, code, resetPass.NewPassword);
-                if(result)
+                var newPassword = UtilityHelper.GenerateRandomPassword(8);
+
+                var result = await _IUserService.ResetPasswordAsync(user, code, newPassword);
+                if (result)
                 {
                     isSuccess = false;
                     StatusCode = 200;
                     Message = "Password Changed completed successfully";
+
+                    // send New Password To Registered Email
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse("jay.convergesol@gmail.com"));
+                    email.To.Add(MailboxAddress.Parse(resetPass.Email));
+                    email.Subject = "Reset Password at TimeSheet Management System";
+
+                    string wwwrootPath = _webHostEnvironment.WebRootPath;
+                    string templateFilePath = Path.Combine(wwwrootPath, "Email_templates/Reset_Password_Email_template.html");
+                    string htmlTemplate = await System.IO.File.ReadAllTextAsync(templateFilePath);
+                    htmlTemplate = htmlTemplate.Replace("#FullName#", user.FirstName + " " + user.LastName).Replace("#Password#", newPassword);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = htmlTemplate };
+
+                    MailData mailData = new MailData
+                    {
+                        EmailBody = htmlTemplate,
+                        EmailSubject = "Reset Password at TimeSheet Management System",
+                        EmailToId = resetPass.Email,
+                        EmailToName = resetPass.Email
+                    };
+                    var sendMail = _mailService.SendMail(mailData);
+                    if (!sendMail)
+                    {
+                        Message += ", Email Not Send";
+                    }
+                    else
+                    {
+                        Message += ", Email Send";
+                    }
                 }
                 else
                 {
@@ -440,53 +524,6 @@ namespace TMS.API.Controllers
                 ExceptionMessage = error.Message.ToString();
                 _logger.LogError(error.ToString(), error);
             }
-            response.StatusCode = StatusCode;
-            response.IsSuccess = isSuccess;
-            response.Message = Message;
-            response.ExceptionMessage = ExceptionMessage;
-            return response;
-        }
-        [HttpPost("AccountUpdate")]
-        [Authorize]
-        public async Task<ResponseDTO<ApplicationUser>> AccountUpdate(ApplicationUser updateUser)
-        {
-            ResponseDTO<ApplicationUser> response = new ResponseDTO<ApplicationUser>();
-            int StatusCode = 0;
-            bool isSuccess = false;
-            ApplicationUser Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
-            try
-            {
-                IdentityResult result = await _IUserService.UpdateUser(updateUser);
-                if (!result.Succeeded)
-                {
-                    var er = "";
-                    foreach (var error in result.Errors)
-                    {
-                        er += " " + error.Description + " [+] ";
-                    }
-                    isSuccess = false;
-                    StatusCode = 400;
-                    Message = er;
-                }
-                else
-                {
-                    StatusCode = 200;
-                    isSuccess = true;
-                    Message = "Account Created successful.";
-                    _logger.LogInformation("Account Created successful");
-                }
-            }
-            catch (Exception error)
-            {
-                isSuccess = false;
-                StatusCode = 500;
-                Message = "Failed while Updating data.";
-                ExceptionMessage = error.Message.ToString();
-                _logger.LogError(error.ToString(), error);
-            }
-        
             response.StatusCode = StatusCode;
             response.IsSuccess = isSuccess;
             response.Message = Message;
