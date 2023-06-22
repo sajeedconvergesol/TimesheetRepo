@@ -42,5 +42,9 @@ namespace TMS.Services.Services
         {
             return _timesheetDetailsRepository.Update(timesheetDetail);
         }
+        public async Task<IEnumerable<TimeSheetDetails>> GetByTimeSheetMasterId(int id)
+        {
+            return await _timesheetDetailsRepository.GetByTimeSheetMasterId(id);
+        }
     }
 }

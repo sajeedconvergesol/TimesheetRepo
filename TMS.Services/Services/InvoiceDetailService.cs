@@ -18,32 +18,25 @@ namespace TMS.Services.Services
             _InvoiceDetailRepository = invoiceDetailRepository;
         }
 
-        public Task<long> Add(InvoiceDetails invoiceDetails)
+        public async Task<bool> Add(List<InvoiceDetails> invoiceDetails)
         {
-           return _InvoiceDetailRepository.Add(invoiceDetails);
+            return await _InvoiceDetailRepository.Add(invoiceDetails);
         }
 
-        public Task<long> Delete(int id)
+        public async Task<int> Delete(int id)
         {
-            return _InvoiceDetailRepository.Delete(id);
-
-        }
-
-        public Task<IEnumerable<InvoiceDetails>> GetAll()
-        {
-            return _InvoiceDetailRepository.GetAll();
+            return await _InvoiceDetailRepository.Delete(id);
 
         }
 
-        public Task<InvoiceDetails> GetById(int id)
+        public async Task<IEnumerable<InvoiceDetails>> GetAll()
         {
-            return _InvoiceDetailRepository.GetById(id);
-
+            return await _InvoiceDetailRepository.GetAll();
         }
 
-        public Task<long> Update(InvoiceDetails invoiceDetails)
+        public async Task<InvoiceDetails> GetById(int id)
         {
-            return _InvoiceDetailRepository.Update(invoiceDetails);
+            return await _InvoiceDetailRepository.GetById(id);
         }
     }
 }

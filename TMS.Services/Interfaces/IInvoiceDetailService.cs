@@ -11,9 +11,7 @@ namespace TMS.Services.Interfaces
     {
         Task<IEnumerable<InvoiceDetails>> GetAll();
         Task<InvoiceDetails> GetById(int id);
-        Task<long> Add(InvoiceDetails invoiceDetails);
-        Task<long> Update(InvoiceDetails invoiceDetails);
-        Task<long> Delete(int id);
-
+        Task<bool> Add(List<InvoiceDetails> invoiceDetails);
+        Task<int> Delete(int id);
     }
 }

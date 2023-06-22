@@ -18,14 +18,14 @@ namespace TMS.Services.Services
             _invoiceRepository = invoiceRepository;
         }
 
-            public Task<int> Add(Invoice invoice)
+        public async Task<int> Add(Invoice invoice)
         {
-            return _invoiceRepository.Add(invoice);
+            return await _invoiceRepository.Add(invoice);
         }
 
-        public Task<int> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            return _invoiceRepository.Delete(id);
+            return await _invoiceRepository.Delete(id);
         }
 
         public Task<IEnumerable<Invoice>> GetAll()
@@ -33,12 +33,12 @@ namespace TMS.Services.Services
             return _invoiceRepository.GetAll();
         }
 
-        public Task<Invoice> GetById(int id)
+        public async Task<Invoice> GetById(int id)
         {
-            return _invoiceRepository.GetById(id);
+            return await _invoiceRepository.GetById(id);
         }
 
-        public Task<int> Update(Invoice invoice)
+        public int Update(Invoice invoice)
         {
             return _invoiceRepository.Update(invoice);
         }

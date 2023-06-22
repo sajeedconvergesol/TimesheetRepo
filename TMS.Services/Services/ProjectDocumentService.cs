@@ -10,41 +10,41 @@ namespace TMS.Services.Services
 {
     public class ProjectDocumentService : IProjectDocumentService
     {
-        private readonly IProjectDetailsRepository _projectDetailsRepository;
+        private readonly IProjectDocumentRepository _projectDetailsRepository;
 
-        public ProjectDocumentService(IProjectDetailsRepository projectDetailsRepository)
+        public ProjectDocumentService(IProjectDocumentRepository projectDetailsRepository)
         {
             _projectDetailsRepository = projectDetailsRepository;
         }
 
-        public Task<int> Add(ProjectDocuments projectDocuments)
+        public async Task<int> Add(ProjectDocuments projectDocuments)
         {
-            return _projectDetailsRepository.Add(projectDocuments);
+            return await _projectDetailsRepository.Add(projectDocuments);
         }
 
-        public Task<int> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            return _projectDetailsRepository.Delete(id);
+            return await _projectDetailsRepository.Delete(id);
 
         }
 
-        public Task<IEnumerable<ProjectDocuments>> GetAll()
+        public async Task<IEnumerable<ProjectDocuments>> GetAll()
         {
-            return _projectDetailsRepository.GetAll();
+            return await _projectDetailsRepository.GetAll();
         }
 
-        public Task<ProjectDocuments> GetById(int id)
+        public async Task<ProjectDocuments> GetById(int id)
         {
-            return _projectDetailsRepository.GetById(id);
+            return await _projectDetailsRepository.GetById(id);
         }
 
-        public Task<int> Update(ProjectDocuments projectDocuments)
+        public async Task<int> Update(ProjectDocuments projectDocuments)
         {
-            return _projectDetailsRepository.Update(projectDocuments);
+            return await _projectDetailsRepository.Update(projectDocuments);
         }
-        public Task<List<ProjectDocuments>> GetByProjectId (int projectId)
+        public async Task<IEnumerable<ProjectDocuments>> GetByProjectId(int projectId)
         {
-            return _projectDetailsRepository.GetByProjectId(projectId);
+            return await _projectDetailsRepository.GetByProjectId(projectId);
         }
     }
 }

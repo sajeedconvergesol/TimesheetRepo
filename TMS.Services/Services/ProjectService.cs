@@ -22,7 +22,7 @@ namespace TMS.Services.Services
             return _repository.Add(project);
         }
 
-        public Task<int> Delete(int id)
+        public Task<bool> Delete(int id)
         {
             return _repository.Delete(id);
         }
@@ -37,7 +37,7 @@ namespace TMS.Services.Services
             return _repository.GetById(id);
         }
 
-        public Task<int> Update(Project project)
+        public int Update(Project project)
         {
             return _repository.Update(project);
         }

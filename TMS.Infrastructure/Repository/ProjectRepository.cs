@@ -20,48 +20,46 @@ namespace TMS.Infrastructure.Repository
 
         public async Task<int> Add(Project project)
         {
-            _unitOfWork.Context.Projects.Add(project);
-            await _unitOfWork.Context.SaveChangesAsync();
+            await _unitOfWork.Context.Set<Project>().AddAsync(project);
+            _unitOfWork.Commit();
             return project.Id;
         }
 
-        public async Task<int> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
+            bool isDeleted;
+            try
             {
-                Project project = await _unitOfWork.Context.Projects.FindAsync(id);
+                Project project = await _unitOfWork.Context.Projects.Where(x => x.Id == id).FirstOrDefaultAsync();
                 _unitOfWork.Context.Projects.Remove(project);
-                await _unitOfWork.Context.SaveChangesAsync();
-                return id;
+                _unitOfWork.Commit();
+                isDeleted = true;
             }
+            catch
+            {
+                isDeleted = false;                
+            }
+            
+            return isDeleted;
         }
         public async Task<IEnumerable<Project>> GetAll()
         {
-                var data = await _unitOfWork.Context.Projects.ToListAsync();
-                await _unitOfWork.Context.SaveChangesAsync();
-                return data;
-            }
+            var data = _unitOfWork.Context.Projects;
+            return await data.ToListAsync();
+        }
 
         public async Task<Project> GetById(int id)
         {
+            var data = _unitOfWork.Context.Projects.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await data;
+        }
 
-                var data = await _unitOfWork.Context.Projects.FindAsync();
-                await _unitOfWork.Context.SaveChangesAsync();
-                return data;
-            }
-
-        public async Task<int> Update(Project project)
+        public int Update(Project project)
         {
-
-                int entry = 0;
-                Project olddata = await _unitOfWork.Context.Projects.FindAsync(project.Id);
-                if (olddata != null)
-                {
-                olddata.ProjectName = project.ProjectName;
-                olddata.StartDate = project.StartDate;
-                olddata.EndDate = project.EndDate;
-                entry = await _unitOfWork.Context.SaveChangesAsync();
-                }
-                return entry;
-            }
+            _unitOfWork.Context.Entry(project).State = EntityState.Modified;
+            _unitOfWork.Context.Projects.Update(project);
+            _unitOfWork.Commit();
+            return project.Id;
+        }
     }
 }

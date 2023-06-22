@@ -12,8 +12,8 @@ namespace TMS.Infrastructure.Interfaces
         Task<IEnumerable<Project>> GetAll();
         Task<Project> GetById(int id);
         Task<int> Add(Project project);
-        Task<int> Update(Project project);
-        Task<int> Delete(int id);
+        int Update(Project project);
+        Task<bool> Delete(int id);
 
     }
 }

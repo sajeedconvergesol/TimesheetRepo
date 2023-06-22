@@ -67,5 +67,10 @@ namespace TMS.Infrastructure.Repository
 			}
 			return entry;
 		}
-	}
+        public async Task<IEnumerable<TimeSheetDetails>> GetByTimeSheetMasterId(int id)
+        {
+            var timeSheetDetails = _unitOfWork.Context.TimeSheetDetails.Where(x => x.TimeSheetMasterId == id);
+            return await timeSheetDetails.ToListAsync();
+        }
+    }
 }
