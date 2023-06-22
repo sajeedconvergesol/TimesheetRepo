@@ -12,7 +12,7 @@ namespace TMS.Infrastructure.Interfaces
         Task<IEnumerable<Invoice>> GetAll();
         Task<Invoice> GetById(int id);
         Task<int> Add(Invoice invoice);
-        Task<int> Update(Invoice invoice);
-        Task<int> Delete(int id);
+        int Update(Invoice invoice);
+        Task<bool> Delete(int id);
     }
 }

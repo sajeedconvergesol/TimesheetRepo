@@ -14,6 +14,6 @@ namespace TMS.Infrastructure.Interfaces
 		Task<int> Add(TimeSheetDetails timesheetDetail);
 		Task<int> Update(TimeSheetDetails timesheetDetail);
 		Task<int> Delete(int id);
-
-	}
+        Task<IEnumerable<TimeSheetDetails>> GetByTimeSheetMasterId(int id);
+    }
 }

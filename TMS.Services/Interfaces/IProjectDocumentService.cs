@@ -13,7 +13,7 @@ namespace TMS.Infrastructure.Interfaces
         Task<ProjectDocuments> GetById(int id);
         Task<int> Add(ProjectDocuments projectDocuments);
         Task<int> Update(ProjectDocuments projectDocuments);
-        Task<int> Delete(int id);
-        Task<List<ProjectDocuments>> GetByProjectId(int projectId);
+        Task<bool> Delete(int id);
+        Task<IEnumerable<ProjectDocuments>> GetByProjectId(int projectId);
     }
 }

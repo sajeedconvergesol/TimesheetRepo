@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.Configuration;
 using TMS.API.DTOs;
 using TMS.Core;
@@ -12,8 +15,7 @@ namespace TMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
-    
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProjectController : ControllerBase
     {
         private readonly IProjectDocumentService _projectDocumentService;
@@ -23,14 +25,14 @@ namespace TMS.API.Controllers
         private readonly IConfiguration _configuration;
 
         public ProjectController(IProjectService projectService, ILogger<ProjectController> logger,
-            IProjectDocumentService projectDocumentService, IConfiguration configuration,IMapper mapper)
+            IProjectDocumentService projectDocumentService, IConfiguration configuration, IMapper mapper)
         {
             _mapper = mapper;
             _projectDocumentService = projectDocumentService;
             _projectService = projectService;
             _logger = logger;
             _configuration = configuration;
-            _configuration = configuration;
+            _mapper = mapper;
         }
 
         [HttpGet("{id}")]
@@ -48,14 +50,14 @@ namespace TMS.API.Controllers
                 if (result == null)
                 {
                     isSuccess = false;
-                    StatusCode = 400;
-                    Message = "Invalid data";
+                    StatusCode = 200;
+                    Message = "project not found";
                 }
                 else
                 {
                     StatusCode = 200;
                     isSuccess = true;
-                    Message = "Valid datashow";
+                    Message = "Project fetched successfully";
                     Response = result;
                 }
             }
@@ -74,13 +76,13 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
-        [HttpGet("GetAll")]
-        public async Task<ResponseDTO<IEnumerable<Project>>> GetTasks()
+        [HttpGet("GetAllProjects")]
+        public async Task<ResponseDTO<IEnumerable<Project>>> GetAllProjects()
         {
             ResponseDTO<IEnumerable<Project>> response = new ResponseDTO<IEnumerable<Project>>();
             int StatusCode = 0;
             bool isSuccess = false;
-            IEnumerable <Project> Response = null;
+            IEnumerable<Project> Response = null;
             string Message = "";
             string ExceptionMessage = "";
             try
@@ -89,14 +91,14 @@ namespace TMS.API.Controllers
                 if (result == null)
                 {
                     isSuccess = false;
-                    StatusCode = 400;
-                    Message = "Invalid data";
+                    StatusCode = 200;
+                    Message = "No project found";
                 }
                 else
                 {
                     StatusCode = 200;
                     isSuccess = true;
-                    Message = "Valid datashow";
+                    Message = "Project list fetched successfully";
                     Response = result;
                 }
             }
@@ -115,8 +117,8 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
-        [HttpPost("CreateProject")]
-        public async Task<ResponseDTO<int>> CreateTasks(Project project)
+        [HttpPost("AddProject")]
+        public async Task<ResponseDTO<int>> AddProject(Project project)
         {
             ResponseDTO<int> response = new ResponseDTO<int>();
             int StatusCode = 0;
@@ -126,19 +128,19 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-                var result = await _projectService.Add(project);
-                if (result == null)
+                var projectId = await _projectService.Add(project);
+                if (projectId == 0)
                 {
                     isSuccess = false;
-                    StatusCode = 400;
-                    Message = "Invalid data enter";
+                    StatusCode = 200;
+                    Message = "Error occured while project add";
                 }
                 else
                 {
                     StatusCode = 200;
                     isSuccess = true;
-                    Message = "Data has been created";
-                    Response = result;
+                    Message = "Project added successfully";
+                    Response = projectId;
                 }
             }
             catch (Exception ex)
@@ -157,7 +159,8 @@ namespace TMS.API.Controllers
             return response;
         }
         [HttpPut]
-        public async Task<ResponseDTO<int>> UpdateTask(Project project)
+        [HttpPut("{id}")]
+        public ResponseDTO<int> UpdateProject(Project project)
         {
             ResponseDTO<int> response = new ResponseDTO<int>();
             int StatusCode = 0;
@@ -167,26 +170,23 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-                int entry = await _projectService.Update(project);
-                if (entry == null)
+                int existingProjectId = _projectService.Update(project);
+                if (existingProjectId == 0)
                 {
                     isSuccess = false;
-                    StatusCode = 400;
-                    Message = "Invalid data enter in filds ";
+                    StatusCode = 200;
+                    Message = "Project not updated";
                 }
                 else
                 {
                     StatusCode = 200;
                     isSuccess = true;
-                    Message = "Data has been successfully..!!";
-                    Response = entry;
+                    Message = "Project updated successfully";
+                    Response = existingProjectId;
                 }
             }
             catch (Exception ex)
             {
-
-
-
                 isSuccess = false;
                 StatusCode = 500;
                 Message = "Failed while fetching data.";
@@ -204,7 +204,7 @@ namespace TMS.API.Controllers
 
 
         [HttpDelete("{id}")]
-        public async Task<ResponseDTO<int>> DeleteTask(int id)
+        public async Task<ResponseDTO<int>> DeleteProject(int id)
         {
             ResponseDTO<int> response = new ResponseDTO<int>();
             int StatusCode = 0;
@@ -214,19 +214,19 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-                var data = await _projectService.Delete(id);
-                if (data == null)
+                await _projectService.Delete(id);
+                if (id == 0)
                 {
                     isSuccess = false;
                     StatusCode = 400;
-                    Message = "Invalid data";
+                    Message = "Error occured while project delete";
                 }
                 else
                 {
                     StatusCode = 200;
                     isSuccess = true;
-                    Message = "Data has been deleted successfully";
-                    Response = data;
+                    Message = "Project deleted successfully";
+                    Response = id;
                 }
             }
             catch (Exception ex)
@@ -352,7 +352,7 @@ namespace TMS.API.Controllers
                     bool basePathExists = System.IO.Directory.Exists(basePath);
                     if (basePathExists)
                     {
-                        List<ProjectDocuments> projectDocuments = await _projectDocumentService.GetByProjectId(projectId);
+                        var projectDocuments = await _projectDocumentService.GetByProjectId(projectId);
                         if (projectDocuments.Any())
                         {
                             var projectDocs = _mapper.Map<List<ProjectDocuments>>(projectDocuments);

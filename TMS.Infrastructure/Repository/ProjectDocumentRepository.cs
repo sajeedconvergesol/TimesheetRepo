@@ -9,7 +9,7 @@ using TMS.Infrastructure.Interfaces;
 
 namespace TMS.Infrastructure.Repository
 {
-    public class ProjectDocumentRepository : IProjectDetailsRepository
+    public class ProjectDocumentRepository : IProjectDocumentRepository
     {
         private readonly IUnitOfWork _unitOfWork;
         public ProjectDocumentRepository(IUnitOfWork unitOfWork)
@@ -24,12 +24,21 @@ namespace TMS.Infrastructure.Repository
             return projectDocuments.Id;
         }
 
-        public async Task<int> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            ProjectDocuments projectDocument = await _unitOfWork.Context.ProjectDocuments.FindAsync(id);
-            _unitOfWork.Context.ProjectDocuments.Remove(projectDocument);
-            await _unitOfWork.Context.SaveChangesAsync();
-            return id;
+            bool isDeleted;
+            try
+            {
+                ProjectDocuments projectDocument = await _unitOfWork.Context.ProjectDocuments.FindAsync(id);
+                _unitOfWork.Context.ProjectDocuments.Remove(projectDocument);
+                _unitOfWork.Commit();
+                isDeleted = true;
+            }
+            catch
+            {
+                isDeleted = false;
+            }            
+            return isDeleted;
         }
 
         public async Task<IEnumerable<ProjectDocuments>> GetAll()
@@ -62,9 +71,10 @@ namespace TMS.Infrastructure.Repository
             }
             return entry;
         }
-        public async Task<List<ProjectDocuments>> GetByProjectId(int projectId)
+        public async Task<IEnumerable<ProjectDocuments>> GetByProjectId(int projectId)
         {
-            return _unitOfWork.Context.ProjectDocuments.Where(z => z.ProjectId == projectId).ToList();
+            var projectDocuments= _unitOfWork.Context.ProjectDocuments.Where(x => x.ProjectId == projectId);
+            return await projectDocuments.ToListAsync();
         }
     }
 }

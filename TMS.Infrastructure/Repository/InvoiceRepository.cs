@@ -20,17 +20,27 @@ namespace TMS.Infrastructure.Repository
 
         public async Task<int> Add(Invoice invoice)
         {
-            _unitOfWork.Context.Invoices.Add(invoice);
-            await _unitOfWork.Context.SaveChangesAsync();
+            await _unitOfWork.Context.Set<Invoice>().AddAsync(invoice);
+            _unitOfWork.Commit();
             return invoice.Id;
         }
 
-        public async Task<int> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            Invoice invoiceDetails = await _unitOfWork.Context.Invoices.FindAsync(id);
-            _unitOfWork.Context.Invoices.Remove(invoiceDetails);
-            await _unitOfWork.Context.SaveChangesAsync();
-            return id;
+            bool isDeleted;
+            try
+            {
+                Invoice invoiceDetails = await _unitOfWork.Context.Invoices.Where(x => x.Id == id).FirstOrDefaultAsync();
+                _unitOfWork.Context.Invoices.Remove(invoiceDetails);
+                
+                isDeleted = true;
+            }
+            catch
+            {
+                isDeleted = false;
+            }
+            
+            return isDeleted;
         }
 
         public async Task<IEnumerable<Invoice>> GetAll()
@@ -42,23 +52,16 @@ namespace TMS.Infrastructure.Repository
 
         public async Task<Invoice> GetById(int id)
         {
-            var data = await _unitOfWork.Context.Invoices.FindAsync();
-            await _unitOfWork.Context.SaveChangesAsync();
+            var data = await _unitOfWork.Context.Invoices.Where(x => x.Id == id).FirstOrDefaultAsync();
             return data;
         }
 
-        public async Task<int> Update(Invoice invoice)
+        public int Update(Invoice invoice)
         {
-            int entry = 0;
-            Invoice olddata = await _unitOfWork.Context.Invoices.FindAsync(invoice.Id);
-            if (olddata != null)
-            {
-                olddata.InvoiceDate = invoice.InvoiceDate;
-                olddata.TimeSheetMasterId = invoice.TimeSheetMasterId;
-                olddata.TotalAmount = invoice.TotalAmount;
-                entry = await _unitOfWork.Context.SaveChangesAsync();
-            }
-            return entry;
+            _unitOfWork.Context.Entry(invoice).State = EntityState.Modified;
+            _unitOfWork.Context.Invoices.Update(invoice);
+            _unitOfWork.Commit();
+            return invoice.Id;
         }
     }
 }

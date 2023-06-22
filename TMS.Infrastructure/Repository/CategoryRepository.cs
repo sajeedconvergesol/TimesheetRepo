@@ -35,16 +35,14 @@ namespace TMS.Infrastructure.Repository
 
         public async Task<IEnumerable<Category>> GetAll()
         {
-            var data = await _unitOfWork.Context.Categories.ToListAsync();
-            await _unitOfWork.Context.SaveChangesAsync();
-            return data;
+            var categories = _unitOfWork.Context.Categories;
+            return await categories.ToListAsync();
         }
 
         public async Task<Category> GetById(int id)
         {
-            var data = await _unitOfWork.Context.Categories.FindAsync();
-            await _unitOfWork.Context.SaveChangesAsync();
-            return data;
+            var category = await _unitOfWork.Context.Categories.Where(x => x.Id == id).FirstOrDefaultAsync();            
+            return category;
         }
 
         public async Task<int> Update(Category category)

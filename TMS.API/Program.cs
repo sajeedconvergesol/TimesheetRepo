@@ -69,10 +69,6 @@ builder.Host.UseSerilog((context, configuration) =>
 configuration.WriteTo.Console()
 .ReadFrom.Configuration(context.Configuration));
 
-//builder.Services.Configure<ForwardedHeadersOptions>(options =>
-//{
-//    options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
-//});
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -117,8 +113,8 @@ builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "Assessment API",
-        Description = "Assessment API",
+        Title = "Timesheet Management API",
+        Description = "Timesheet Management API",
         //TermsOfService = new Uri("https://convergesolution.com/"),
         //License = new OpenApiLicense
         //{

@@ -7,14 +7,14 @@ using TMS.Core;
 
 namespace TMS.Infrastructure.Interfaces
 {
-    public interface IProjectDetailsRepository
+    public interface IProjectDocumentRepository
     {
         Task<IEnumerable<ProjectDocuments>> GetAll();
         Task<ProjectDocuments> GetById(int id);
         Task<int> Add(ProjectDocuments projectDocuments);
         Task<int> Update(ProjectDocuments projectDocuments);
-        Task<int> Delete(int id);
-        Task<List<ProjectDocuments>> GetByProjectId(int projectId);
+        Task<bool> Delete(int id);
+        Task<IEnumerable<ProjectDocuments>> GetByProjectId(int projectId);
 
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TMS.API.DTOs;
 using TMS.Core;
@@ -9,6 +11,7 @@ namespace TMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CategoryController : ControllerBase
     {
 
@@ -21,7 +24,7 @@ namespace TMS.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ResponseDTO<Category>> GetProject(int id)
+        public async Task<ResponseDTO<Category>> GetCategory(int id)
         {
             ResponseDTO<Category> response = new ResponseDTO<Category>();
             int StatusCode = 0;
@@ -62,7 +65,7 @@ namespace TMS.API.Controllers
             return response;
         }
         [HttpGet("GetAll")]
-        public async Task<ResponseDTO<IEnumerable<Category>>> GetTasks()
+        public async Task<ResponseDTO<IEnumerable<Category>>> GetAll()
         {
             ResponseDTO<IEnumerable<Category>> response = new ResponseDTO<IEnumerable<Category>>();
             int StatusCode = 0;
@@ -102,8 +105,8 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
-        [HttpPost("CreateProject")]
-        public async Task<ResponseDTO<int>> CreateTasks(Category category)
+        [HttpPost("AddCategory")]
+        public async Task<ResponseDTO<int>> AddCategory(Category category)
         {
             ResponseDTO<int> response = new ResponseDTO<int>();
             int StatusCode = 0;
@@ -113,19 +116,19 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-                var result = await _categoryService.Add(category);
-                if (result == null)
+                var categoryId = await _categoryService.Add(category);
+                if (categoryId==0)
                 {
                     isSuccess = false;
                     StatusCode = 400;
-                    Message = "Invalid data enter";
+                    Message = "Error occurred while category add";
                 }
                 else
                 {
                     StatusCode = 200;
                     isSuccess = true;
-                    Message = "Data has been created";
-                    Response = result;
+                    Message = "Category added successfully";
+                    Response = categoryId;
                 }
             }
             catch (Exception ex)
@@ -144,7 +147,7 @@ namespace TMS.API.Controllers
             return response;
         }
         [HttpPut]
-        public async Task<ResponseDTO<int>> UpdateTask(Category category)
+        public async Task<ResponseDTO<int>> UpdateCategory(Category category)
         {
             ResponseDTO<int> response = new ResponseDTO<int>();
             int StatusCode = 0;
@@ -154,19 +157,19 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-                int entry = await _categoryService.Update(category);
-                if (entry == null)
+                int existingCategoryId = await _categoryService.Update(category);
+                if (existingCategoryId==0)
                 {
                     isSuccess = false;
                     StatusCode = 400;
-                    Message = "Invalid data enter in filds ";
+                    Message = "Error occurred while category update";
                 }
                 else
                 {
                     StatusCode = 200;
                     isSuccess = true;
-                    Message = "Data has been successfully..!!";
-                    Response = entry;
+                    Message = "Category updated successfully";
+                    Response = existingCategoryId;
                 }
             }
             catch (Exception ex)
