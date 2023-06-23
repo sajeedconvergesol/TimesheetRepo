@@ -18,33 +18,37 @@ namespace TMS.Services.Services
             _timesheetDetailsRepository = timesheetDetailsRepository;
         }
 
-        public Task<int> Add(TimeSheetDetails timesheetDetail)
+        public async Task<bool> Add(List<TimeSheetDetails> timesheetDetailList)
         {
-            return _timesheetDetailsRepository.Add(timesheetDetail);
+            return await _timesheetDetailsRepository.Add(timesheetDetailList);
         }
 
-        public Task<int> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            return _timesheetDetailsRepository.Delete(id);
+            return await _timesheetDetailsRepository.Delete(id);
         }
 
-        public Task<IEnumerable<TimeSheetDetails>> GetAll()
+        public async Task<IEnumerable<TimeSheetDetails>> GetAll()
         {
-            return _timesheetDetailsRepository.GetAll();
+            return await _timesheetDetailsRepository.GetAll();
         }
 
-        public Task<TimeSheetDetails> GetById(int id)
+        public async Task<TimeSheetDetails> GetById(int id)
         {
-            return _timesheetDetailsRepository.GetById(id);
+            return await _timesheetDetailsRepository.GetById(id);
         }
 
-        public Task<int> Update(TimeSheetDetails timesheetDetail)
+        public int Update(TimeSheetDetails timesheetDetail)
         {
             return _timesheetDetailsRepository.Update(timesheetDetail);
         }
         public async Task<IEnumerable<TimeSheetDetails>> GetByTimeSheetMasterId(int id)
         {
             return await _timesheetDetailsRepository.GetByTimeSheetMasterId(id);
+        }
+        public bool DeleteByTimeSheetId(int timesheetId)
+        {
+            return _timesheetDetailsRepository.DeleteByTimeSheetId(timesheetId);
         }
     }
 }

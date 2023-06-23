@@ -22,17 +22,27 @@ namespace TMS.Infrastructure.Repository
 
 		public async Task<int> Add(Tasks task)
 		{
-			_unitOfWork.Context.Task.Add(task);
-			await _unitOfWork.Context.SaveChangesAsync();
+			await _unitOfWork.Context.Set<Tasks>().AddAsync(task);
+			_unitOfWork.Commit();
 			return task.Id;
 		}
 
-		public async Task<int> Delete(int id)
+		public async Task<bool> Delete(int id)
 		{
-			Tasks task = await _unitOfWork.Context.Task.FindAsync(id);
-			_unitOfWork.Context.Task.Remove(task);
-			await _unitOfWork.Context.SaveChangesAsync();
-			return task.Id;
+			bool isDeleted;
+			try
+			{
+                Tasks task = await _unitOfWork.Context.Task.Where(x=>x.Id==id).FirstOrDefaultAsync();
+                _unitOfWork.Context.Task.Remove(task);
+				_unitOfWork.Commit();
+				isDeleted = true;
+            }
+			catch
+			{
+                isDeleted = false;
+            }
+			
+			return isDeleted;
 		}
 
 		public async Task<IEnumerable<Tasks>> GetAll()
@@ -50,18 +60,13 @@ namespace TMS.Infrastructure.Repository
 			return data;
 		}
 
-		public async Task<int> Update(Tasks task)
+		public int Update(Tasks task)
 		{
-			int entry = 0;
-			Tasks olddata = await _unitOfWork.Context.Task.FindAsync(task.Id);
-			if (olddata != null)
-			{
-				olddata.TaskName = task.TaskName;
-				olddata.TaskDescription = task.TaskDescription;
-				olddata.EstimatedHours = task.EstimatedHours;
-				entry = await _unitOfWork.Context.SaveChangesAsync();
-			}
-			return entry;
-		}
+            int taskId = 0;
+            _unitOfWork.Context.Entry(task).State = EntityState.Modified;
+            _unitOfWork.Context.Task.Update(task);
+            _unitOfWork.Commit();
+            return taskId;
+        }
 	}
 }

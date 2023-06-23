@@ -18,27 +18,27 @@ namespace TMS.Services.Services
             _taskAssignmentRepository = taskAssignmentRepository;
         }
 
-        public Task<int> Add(TaskAssignment taskAssignment)
+        public async Task<int> Add(TaskAssignment taskAssignment)
         {
-            return _taskAssignmentRepository.Add(taskAssignment);
+            return await _taskAssignmentRepository.Add(taskAssignment);
         }
 
-        public Task<int> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            return _taskAssignmentRepository.Delete(id);
+            return await _taskAssignmentRepository.Delete(id);
         }
 
-        public Task<IEnumerable<TaskAssignment>> GetAll()
+        public async Task<IEnumerable<TaskAssignment>> GetAll()
         {
-            return _taskAssignmentRepository.GetAll();
+            return await _taskAssignmentRepository.GetAll();
         }
 
-        public Task<TaskAssignment> GetById(int id)
+        public async Task<TaskAssignment> GetById(int id)
         {
-            return _taskAssignmentRepository.GetById(id);
+            return await _taskAssignmentRepository.GetById(id);
         }
 
-        public Task<int> Update(TaskAssignment taskAssignment)
+        public int Update(TaskAssignment taskAssignment)
         {
             return _taskAssignmentRepository.Update(taskAssignment);
         }

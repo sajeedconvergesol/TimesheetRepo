@@ -12,8 +12,8 @@ namespace TMS.Infrastructure.Interfaces
 		Task<TimeSheetApprovals> GetTimesheetApproval(int timesheetApprovalId);
 		Task<IEnumerable<TimeSheetApprovals>> GetTimesheetApprovals();
 		Task<int> CreateTimesheetApproval(TimeSheetApprovals timesheetApproval);
-		Task<int> UpdateTimesheetApproval(TimeSheetApprovals timesheetApproval);
-		Task<int> DeleteTimesheetApproval(int timesheetApprovalId);
-
+		int UpdateTimesheetApproval(TimeSheetApprovals timesheetApproval);
+		Task<bool> DeleteTimesheetApproval(int timesheetApprovalId);
+		Task<TimeSheetApprovals> GetTimeApprovalByTimeSheetId(int timeSheetId);
 	}
 }

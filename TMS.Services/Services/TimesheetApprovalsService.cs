@@ -23,24 +23,28 @@ namespace TMS.Services.Services
             return _timesheetApprovalsRepository.CreateTimesheetApproval(timesheetApproval);
         }
 
-        public Task<int> DeleteTimesheetApproval(int timesheetApprovalId)
+        public async Task<bool> DeleteTimesheetApproval(int timesheetApprovalId)
         {
-            return _timesheetApprovalsRepository.DeleteTimesheetApproval(timesheetApprovalId);
+            return await _timesheetApprovalsRepository.DeleteTimesheetApproval(timesheetApprovalId);
         }
 
-        public Task<TimeSheetApprovals> GetTimesheetApproval(int timesheetApprovalId)
+        public async Task<TimeSheetApprovals> GetTimesheetApproval(int timesheetApprovalId)
         {
-            return _timesheetApprovalsRepository.GetTimesheetApproval(timesheetApprovalId);
+            return await _timesheetApprovalsRepository.GetTimesheetApproval(timesheetApprovalId);
         }
 
-        public Task<IEnumerable<TimeSheetApprovals>> GetTimesheetApprovals()
+        public async Task<IEnumerable<TimeSheetApprovals>> GetTimesheetApprovals()
         {
-            return _timesheetApprovalsRepository.GetTimesheetApprovals();
+            return await _timesheetApprovalsRepository.GetTimesheetApprovals();
         }
 
-        public Task<int> UpdateTimesheetApproval(TimeSheetApprovals timesheetApproval)
+        public int UpdateTimesheetApproval(TimeSheetApprovals timesheetApproval)
         {
             return _timesheetApprovalsRepository.UpdateTimesheetApproval(timesheetApproval);
+        }
+        public async Task<TimeSheetApprovals> GetTimeApprovalByTimeSheetId(int timeSheetId)
+        {
+            return await _timesheetApprovalsRepository.GetTimeApprovalByTimeSheetId(timeSheetId);
         }
     }
 }

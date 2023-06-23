@@ -12,7 +12,8 @@ namespace TMS.Services.Interfaces
         Task<TimeSheetMaster> GetTimesheetMaster(int id);
         Task<IEnumerable<TimeSheetMaster>> GetTimesheetMastersAll();
         Task<int> CreateTimesheetMaster(TimeSheetMaster timesheetMaster);
-        Task<int> UpdateTimesheetMaster(TimeSheetMaster timesheetMaster);
-        Task<int> DeleteTimesheetMaster(int id);
+        int UpdateTimesheetMaster(TimeSheetMaster timesheetMaster);
+        Task<bool> DeleteTimesheetMaster(int id);
+        Task<IEnumerable<TimeSheetMaster>> GetByUserId(int userId);
     }
 }

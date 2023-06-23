@@ -24,7 +24,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Add services to the container.
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
     // Configure identity options here.
     options.Password.RequireDigit = false;
@@ -45,15 +45,66 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
  .AddDefaultTokenProviders();
 builder.Services.AddDbContext<ApplicationDbContext>(opts => opts.UseSqlServer(builder.Configuration.GetSection("ConnectionString:TimeSheetDB").Value));
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("EmailSender"));
+
 #region Service Scope
+
+#region Unit Of Work Service
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+#endregion
+
+#region User Services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+#endregion
+
+#region Role Services
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+#endregion
+
+#region Invoice Services
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+#endregion
+
+#region Invoice Detail Services
 builder.Services.AddScoped<IInvoiceDetailRepository, InvoiceDetailRepository>();
 builder.Services.AddScoped<IInvoiceDetailService, InvoiceDetailService>();
+#endregion
+
+#region Tasks Services
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskService, TaskService>();
+#endregion
+
+#region Task Assignment Services 
+builder.Services.AddScoped<ITaskAssignmentRepository, TaskAssignmentRepository>();
+builder.Services.AddScoped<ITaskAssignmentService, TaskAssignmentService>();
+#endregion
+
+#region TimeSheetApproval Service
+builder.Services.AddScoped<ITimesheetApprovalsRepository, TimesheetApprovalsRepository>();
+builder.Services.AddScoped<ITimesheetApprovalsService, TimesheetApprovalsService>();
+#endregion
+
+#region TimeSheet Services
+builder.Services.AddScoped<ITimesheetMasterRepository, TimesheetMasterRepository>();
+builder.Services.AddScoped<ITimesheetMasterService, TimesheetMasterService>();
+#endregion
+
+#region TimeSheet Services
+builder.Services.AddScoped<ITimesheetDetailsRepository, TimesheetDetailsRepository>();
+builder.Services.AddScoped<ITimesheetDetailsService, TimesheetDetailsService>();
+#endregion
+
+#region User Resolver Service
+builder.Services.AddScoped<IUserResolverService, UserResolverService>();
+#endregion
+
+#region Mail Service
 builder.Services.AddTransient<IMailService, MailService>();
+#endregion
+
 #endregion
 
 // Automapper

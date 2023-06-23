@@ -20,59 +20,51 @@ namespace TMS.Infrastructure.Repository
 
 		public async Task<int> CreateTimesheetApproval(TimeSheetApprovals timesheetApproval)
 		{
-			_unitOfWork.Context.TimeSheetApprovals.Add(timesheetApproval);
-			await _unitOfWork.Context.SaveChangesAsync();
+			await _unitOfWork.Context.Set<TimeSheetApprovals>().AddAsync(timesheetApproval);
+            _unitOfWork.Commit();
 			return timesheetApproval.Id;
 		}
 
-		public async Task<int> DeleteTimesheetApproval(int timesheetApprovalId)
+		public async Task<bool> DeleteTimesheetApproval(int timesheetApprovalId)
 		{
-			TimeSheetApprovals timeSheetApprovals = await _unitOfWork.Context.TimeSheetApprovals.FindAsync(timesheetApprovalId);
-			_unitOfWork.Context.TimeSheetApprovals.Remove(timeSheetApprovals);
-			await _unitOfWork.Context.SaveChangesAsync();
-			return timesheetApprovalId;
+			bool isDeleted;
+			try
+			{
+                TimeSheetApprovals timeSheetApprovals = await _unitOfWork.Context.TimeSheetApprovals.Where(x => x.Id == timesheetApprovalId).FirstOrDefaultAsync();
+                _unitOfWork.Context.TimeSheetApprovals.Remove(timeSheetApprovals);
+                _unitOfWork.Commit();
+				isDeleted = true;
+            }
+			catch
+			{
+				isDeleted = false;
+			}			
+            return isDeleted;
 		}
 
 		public async Task<TimeSheetApprovals> GetTimesheetApproval(int timesheetApprovalId)
 		{
-			var data = await _unitOfWork.Context.TimeSheetApprovals.FindAsync(timesheetApprovalId);
-			await _unitOfWork.Context.SaveChangesAsync();
-			return data;
+			var data = _unitOfWork.Context.TimeSheetApprovals.Where(x => x.Id == timesheetApprovalId).FirstOrDefaultAsync();
+            return await data;
 		}
 
 		public async Task<IEnumerable<TimeSheetApprovals>> GetTimesheetApprovals()
 		{
-			var data = await _unitOfWork.Context.TimeSheetApprovals.ToListAsync();
-
-			//if (fromDate != null)
-			//{
-			//	query = query.Where(x => x.CreatedOn >= fromDate);
-			//}
-
-			//if (toDate != null)
-			//{
-			//	query = query.Where(x => x.LastModifiedOn <= toDate);
-			//}
-			await _unitOfWork.Context.SaveChangesAsync();
-			return data;
+			var data = _unitOfWork.Context.TimeSheetApprovals;
+			return await data.ToListAsync();
 		}
 
-		public async Task<int> UpdateTimesheetApproval(TimeSheetApprovals timesheetApproval)
+		public int UpdateTimesheetApproval(TimeSheetApprovals timesheetApproval)
 		{
-			int entry = 0;
-			TimeSheetApprovals olddata = await _unitOfWork.Context.TimeSheetApprovals.FindAsync(timesheetApproval.Id);
-			if (olddata != null)
-			{
-				olddata.TimeSheetMasterId = timesheetApproval.TimeSheetMasterId;
-				olddata.ApprovalStatus = timesheetApproval.ApprovalStatus;
-				olddata.ApprovalStatusBy = timesheetApproval.ApprovalStatusBy;
-				olddata.CreatedOn = timesheetApproval.CreatedOn;
-				olddata.CreatedBy = timesheetApproval.CreatedBy;
-				olddata.LastModifiedOn = timesheetApproval.LastModifiedOn;
-				olddata.LastModifiedBy = timesheetApproval.LastModifiedBy;
-				entry = await _unitOfWork.Context.SaveChangesAsync();
-			}
-			return entry;
+            _unitOfWork.Context.Entry(timesheetApproval).State = EntityState.Modified;
+            _unitOfWork.Context.TimeSheetApprovals.Update(timesheetApproval);
+            _unitOfWork.Commit();
+            return timesheetApproval.Id;
+        }
+		public async Task<TimeSheetApprovals> GetTimeApprovalByTimeSheetId(int timeSheetId)
+		{
+			var timeSheetApproval = _unitOfWork.Context.TimeSheetApprovals.Where(x => x.TimeSheetMasterId == timeSheetId).FirstOrDefaultAsync();
+			return await timeSheetApproval;
 		}
-	}
+    }
 }
