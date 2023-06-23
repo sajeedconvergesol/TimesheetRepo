@@ -35,29 +35,29 @@ namespace TMS.API.Controllers
         #region GetInvoiceById
 
         [HttpGet("{id}")]
-        public async Task<ResponseDTO<Invoice>> GetInvoice(int id)
+        public async Task<ResponseDTO<InvoiceResponseDTO>> GetInvoice(int id)
         {
-            ResponseDTO<Invoice> response = new ResponseDTO<Invoice>();
+            ResponseDTO<InvoiceResponseDTO> response = new();
             int StatusCode = 0;
             bool isSuccess = false;
-            Invoice Response = null;
+            InvoiceResponseDTO Response = null;
             string Message = "";
             string ExceptionMessage = "";
             try
             {
-                var result = await _invoiceService.GetById(id);
-                if (result == null)
+                var invoice = await _invoiceService.GetById(id);
+                if (invoice == null)
                 {
                     isSuccess = false;
                     StatusCode = 400;
-                    Message = "Invalid data";
+                    Message = "Invoice not found";
                 }
                 else
                 {
                     StatusCode = 200;
                     isSuccess = true;
-                    Message = "Valid datashow";
-                    Response = result;
+                    Message = "Invoice fetched successfully";
+                    Response = _mapper.Map<InvoiceResponseDTO>(invoice);
                 }
             }
             catch (Exception ex)
@@ -81,18 +81,18 @@ namespace TMS.API.Controllers
         #region GetAllInvoice
 
         [HttpGet("GetAllInvoice")]
-        public async Task<ResponseDTO<IEnumerable<Invoice>>> GetAllInvoice()
+        public async Task<ResponseDTO<IEnumerable<InvoiceResponseDTO>>> GetAllInvoice()
         {
-            ResponseDTO<IEnumerable<Invoice>> response = new ResponseDTO<IEnumerable<Invoice>>();
+            ResponseDTO<IEnumerable<InvoiceResponseDTO>> response = new();
             int StatusCode = 0;
             bool isSuccess = false;
-            IEnumerable<Invoice> Response = null;
+            IEnumerable<InvoiceResponseDTO> Response = null;
             string Message = "";
             string ExceptionMessage = "";
             try
             {
-                var result = await _invoiceService.GetAll();
-                if (result == null)
+                var invoices = await _invoiceService.GetAll();
+                if (invoices == null)
                 {
                     isSuccess = false;
                     StatusCode = 400;
@@ -103,7 +103,7 @@ namespace TMS.API.Controllers
                     StatusCode = 200;
                     isSuccess = true;
                     Message = "Invoices fetched successfully";
-                    Response = result;
+                    Response = _mapper.Map<IEnumerable<InvoiceResponseDTO>>(invoices);
                 }
             }
             catch (Exception ex)

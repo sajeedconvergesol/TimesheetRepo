@@ -12,7 +12,7 @@ namespace TMS.Infrastructure.Interfaces
 		Task<IEnumerable<TaskAssignment>> GetAll();
 		Task<TaskAssignment> GetById(int id);
 		Task<int> Add(TaskAssignment taskAssignment);
-		Task<int> Update(TaskAssignment taskAssignment);
-		Task<int> Delete(int id);
+		int Update(TaskAssignment taskAssignment);
+		Task<bool> Delete(int id);
 	}
 }

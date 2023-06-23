@@ -20,53 +20,55 @@ namespace TMS.Infrastructure.Repository
 
 		public async Task<int> CreateTimesheetMaster(TimeSheetMaster timesheetMaster)
 		{	
-			await _unitOfWork.Context.TimeSheetMaster.AddAsync(timesheetMaster);
-			await _unitOfWork.Context.SaveChangesAsync();
+			await _unitOfWork.Context.Set<TimeSheetMaster>().AddAsync(timesheetMaster);
+			_unitOfWork.Commit();
 			return timesheetMaster.Id;
 
 		}
 
-		public async Task<int> DeleteTimesheetMaster(int id)
+		public async Task<bool> DeleteTimesheetMaster(int id)
 		{
-			TimeSheetMaster timesheetMaster = await _unitOfWork.Context.TimeSheetMaster.FindAsync(id);
-			_unitOfWork.Context.TimeSheetMaster.Remove(timesheetMaster);
-			await _unitOfWork.Context.SaveChangesAsync();
-			return timesheetMaster.Id;
+			bool isDeleted;
+			try
+			{
+                TimeSheetMaster timesheetMaster = await _unitOfWork.Context.TimeSheetMaster.Where(x => x.Id == id).FirstOrDefaultAsync();
+                _unitOfWork.Context.TimeSheetMaster.Remove(timesheetMaster);
+                _unitOfWork.Commit();
+                isDeleted = true;
+            }
+			catch
+			{
+				isDeleted = false;
+			}
+			
+			return isDeleted;
 		}
 
 		public async Task<TimeSheetMaster> GetTimesheetMaster(int id)
 		{
-			var data = await _unitOfWork.Context.TimeSheetMaster.FindAsync(id);
-			await _unitOfWork.Context.SaveChangesAsync();
-			return data;
-
+			var data = _unitOfWork.Context.TimeSheetMaster.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await data;
 		}
 
 		public async Task<IEnumerable<TimeSheetMaster>> GetTimesheetMastersAll()
-		{ 
-			var data = await _unitOfWork.Context.TimeSheetMaster.ToListAsync();
-			await _unitOfWork.Context.SaveChangesAsync();
-			return data;
-		}
-
-		public async Task<int> UpdateTimesheetMaster(TimeSheetMaster timesheetMaster)
 		{
-			int entry = 0;
-		   TimeSheetMaster olddata = await _unitOfWork.Context.TimeSheetMaster.FindAsync(timesheetMaster.Id);
-			if(olddata != null)
-			{
-				olddata.FromDate = timesheetMaster.FromDate;
-				olddata.ToDate = timesheetMaster.ToDate;
-				olddata.TotalHours = timesheetMaster.TotalHours;
-				olddata.TimeSheetStatus = timesheetMaster.TimeSheetStatus;
-				olddata.Comments = timesheetMaster.Comments;
-				olddata.CreatedOn = timesheetMaster.CreatedOn;
-				olddata.CreatedBy = timesheetMaster.CreatedBy;
-				olddata.LastModifiedOn = timesheetMaster.LastModifiedOn;
-				olddata.LastModifiedBy = timesheetMaster.LastModifiedBy;
-				entry = await _unitOfWork.Context.SaveChangesAsync();
-			}
-			return entry;
-		}
-	}
+			var data = _unitOfWork.Context.TimeSheetMaster;
+			return await data.ToListAsync();
+        }
+
+		public int UpdateTimesheetMaster(TimeSheetMaster timesheetMaster)
+		{
+            int timesheetMasterUpdate = 0;
+            _unitOfWork.Context.Entry(timesheetMaster).State = EntityState.Modified;
+            _unitOfWork.Context.TimeSheetMaster.Update(timesheetMaster);
+            _unitOfWork.Commit();
+			timesheetMasterUpdate = timesheetMaster.Id;
+            return timesheetMasterUpdate;
+        }
+        public async Task<IEnumerable<TimeSheetMaster>> GetByUserId(int userId)
+        {
+            var data = _unitOfWork.Context.TimeSheetMaster.Where(x => x.CreatedBy == userId);
+            return await data.ToListAsync();
+        }
+    }
 }

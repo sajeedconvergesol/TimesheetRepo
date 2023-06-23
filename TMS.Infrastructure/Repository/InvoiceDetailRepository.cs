@@ -43,8 +43,8 @@ namespace TMS.Infrastructure.Repository
 
         public async Task<IEnumerable<InvoiceDetails>> GetAll()
         {
-            var data = await _unitOfWork.Context.InvoiceDetails.ToListAsync();
-            return data;
+            var data = _unitOfWork.Context.InvoiceDetails;
+            return await data.ToListAsync();
         }
 
         public async Task<InvoiceDetails> GetById(int id)

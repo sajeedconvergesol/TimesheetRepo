@@ -32,7 +32,7 @@ namespace TMS.Infrastructure.Repository
             {
                 Invoice invoiceDetails = await _unitOfWork.Context.Invoices.Where(x => x.Id == id).FirstOrDefaultAsync();
                 _unitOfWork.Context.Invoices.Remove(invoiceDetails);
-                
+                _unitOfWork.Commit();
                 isDeleted = true;
             }
             catch
@@ -45,9 +45,8 @@ namespace TMS.Infrastructure.Repository
 
         public async Task<IEnumerable<Invoice>> GetAll()
         {
-            var data = await _unitOfWork.Context.Invoices.ToListAsync();
-            await _unitOfWork.Context.SaveChangesAsync();
-            return data;
+            var data = _unitOfWork.Context.Invoices;
+            return await data.ToListAsync();
         }
 
         public async Task<Invoice> GetById(int id)

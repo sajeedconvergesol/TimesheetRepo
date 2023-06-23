@@ -11,9 +11,10 @@ namespace TMS.Infrastructure.Interfaces
 	{
 		Task<IEnumerable<TimeSheetDetails>> GetAll();
 		Task<TimeSheetDetails> GetById(int id);
-		Task<int> Add(TimeSheetDetails timesheetDetail);
-		Task<int> Update(TimeSheetDetails timesheetDetail);
-		Task<int> Delete(int id);
+		Task<bool> Add(List<TimeSheetDetails> timesheetDetailList);
+		int Update(TimeSheetDetails timesheetDetail);
+		Task<bool> Delete(int id);
+		bool DeleteByTimeSheetId(int timesheetId);
         Task<IEnumerable<TimeSheetDetails>> GetByTimeSheetMasterId(int id);
     }
 }

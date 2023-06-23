@@ -22,7 +22,7 @@ namespace TMS.Services.Services
             return await _timesheetMasterRepository.CreateTimesheetMaster(timesheetMaster);
         }
 
-        public async Task<int> DeleteTimesheetMaster(int id)
+        public async Task<bool> DeleteTimesheetMaster(int id)
         {
             return await _timesheetMasterRepository.DeleteTimesheetMaster(id);
         }
@@ -37,9 +37,13 @@ namespace TMS.Services.Services
             return await _timesheetMasterRepository.GetTimesheetMastersAll();
         }
 
-        public Task<int> UpdateTimesheetMaster(TimeSheetMaster timesheetMaster)
+        public int UpdateTimesheetMaster(TimeSheetMaster timesheetMaster)
         {
             return _timesheetMasterRepository.UpdateTimesheetMaster(timesheetMaster);
+        }
+        public async Task<IEnumerable<TimeSheetMaster>> GetByUserId(int userId)
+        {
+            return await _timesheetMasterRepository.GetByUserId(userId);
         }
     }
 }
