@@ -11,6 +11,9 @@ namespace TMS.API.Mappings
             CreateMap<ApplicationUser, PostUserDTO>()
                .ReverseMap();
 
+            CreateMap<ApplicationUser, RequestUserDTO>()
+               .ReverseMap();
+
             CreateMap<TaskAssignment, TaskAssignmentResponseDTO>()
               .ReverseMap();
 

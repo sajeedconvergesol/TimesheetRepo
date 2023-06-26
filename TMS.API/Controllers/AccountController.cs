@@ -1,16 +1,11 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using MimeKit.Text;
 using MimeKit;
-using System.Diagnostics.Metrics;
+using MimeKit.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -18,7 +13,6 @@ using TMS.API.DTOs;
 using TMS.API.Helpers;
 using TMS.Core;
 using TMS.Services.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using TMS.Services.Services;
 
 namespace TMS.API.Controllers
@@ -191,7 +185,7 @@ namespace TMS.API.Controllers
         }
 
         [HttpPost("Registration")]
-        public async Task<ResponseDTO<ApplicationUser>> Registration(ApplicationUser newUser)
+        public async Task<ResponseDTO<ApplicationUser>> Registration(RequestUserDTO newUser)
         {
             ResponseDTO<ApplicationUser> response = new ResponseDTO<ApplicationUser>();
             int StatusCode = 0;
@@ -201,7 +195,8 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-                IdentityResult result = await _IUserService.CreateAsync(newUser, newUser.PasswordHash, "Developers");
+                var user = _mapper.Map<ApplicationUser>(newUser);
+                IdentityResult result = await _IUserService.CreateAsync(user, newUser.Password, newUser.Role);
                 if (!result.Succeeded)
                 {
                     var er = "";
@@ -222,7 +217,7 @@ namespace TMS.API.Controllers
 
                     //send Email That account has been Created
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("jay.convergesol@gmail.com"));
+                    email.From.Add(MailboxAddress.Parse(_config["EmailSender:SenderEmail"]));
                     email.To.Add(MailboxAddress.Parse(newUser.Email));
                     email.Subject = "Account Created at TimeSheet Management System";
 
@@ -298,12 +293,12 @@ namespace TMS.API.Controllers
         }
 
         [HttpGet("AccountDetails")]
-        public async Task<ResponseDTO<ApplicationUser>> GetUserLoginInformation(string userId)
+        public async Task<ResponseDTO<PostUserDTO>> GetUserLoginInformation(string userId)
         {
-            ResponseDTO<ApplicationUser> response = new ResponseDTO<ApplicationUser>();
+            ResponseDTO<PostUserDTO> response = new ResponseDTO<PostUserDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            ApplicationUser Response = null;
+            PostUserDTO Response = null;
             string Message = "";
             string ExceptionMessage = "";
 
@@ -312,11 +307,12 @@ namespace TMS.API.Controllers
                 ApplicationUser user = await _IUserService.GetById(userId);
                 if (user != null)
                 {
-                    Response = user;
+                    var userDTO = _mapper.Map<PostUserDTO>(user);
+                    Response = userDTO;
                     StatusCode = 200;
                     isSuccess = true;
-                    Message = "Accound Details Found";
-                    _logger.LogInformation("Accound Details Found");
+                    Message = "Accound Details fetched successfully";
+                    _logger.LogInformation("Accound Details fetched successfully");
                 }
                 else
                 {
