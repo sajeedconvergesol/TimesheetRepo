@@ -11,6 +11,9 @@ namespace TMS.API.Mappings
             CreateMap<ApplicationUser, PostUserDTO>()
                .ReverseMap();
 
+            CreateMap<ApplicationUser, RequestUserDTO>()
+               .ReverseMap();
+
             CreateMap<TaskAssignment, TaskAssignmentResponseDTO>()
               .ReverseMap();
 
@@ -48,6 +51,12 @@ namespace TMS.API.Mappings
               .ReverseMap();
 
             CreateMap<InvoiceDetails, InvoiceDetailRequestDTO>()
+            .ReverseMap();
+
+            CreateMap<Project, ProjectResponseDTO>()
+            .ReverseMap();
+
+            CreateMap<Project, ProjectRequestDTO>()
             .ReverseMap();
         }
     }

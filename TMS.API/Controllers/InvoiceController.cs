@@ -34,7 +34,7 @@ namespace TMS.API.Controllers
 
         #region GetInvoiceById
 
-        [HttpGet("{id}")]
+        [HttpGet("GetInvoice")]
         public async Task<ResponseDTO<InvoiceResponseDTO>> GetInvoice(int id)
         {
             ResponseDTO<InvoiceResponseDTO> response = new();
@@ -195,7 +195,7 @@ namespace TMS.API.Controllers
                 StatusCode = 500;
                 Message = "Failed while fetching data.";
                 ExceptionMessage = ex.Message.ToString();
-                //_logger.LogError(ex.ToString(), ex);
+                _logger.LogError(ex.ToString(), ex);
             }
             response.StatusCode = StatusCode;
             response.IsSuccess = isSuccess;
