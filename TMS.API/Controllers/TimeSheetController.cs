@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TMS.API.DTOs;
@@ -11,6 +13,7 @@ namespace TMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TimeSheetController : ControllerBase
     {
         private readonly ITimesheetMasterService _timesheetMasterService;
@@ -91,9 +94,9 @@ namespace TMS.API.Controllers
         }
         #endregion
 
-        #region GetTaskAssignment
-        [HttpGet("GetTaskAssignment")]
-        public async Task<ResponseDTO<IEnumerable<TaskAssignmentResponseDTO>>> GetTaskAssignment()
+        #region GetTaskAssignments
+        [HttpGet("GetTaskAssignments")]
+        public async Task<ResponseDTO<IEnumerable<TaskAssignmentResponseDTO>>> GetTaskAssignments()
         {
             ResponseDTO<IEnumerable<TaskAssignmentResponseDTO>> response = new ResponseDTO<IEnumerable<TaskAssignmentResponseDTO>>();
             int StatusCode = 0;
@@ -137,7 +140,7 @@ namespace TMS.API.Controllers
         }
         #endregion
 
-        #region
+        #region AddTaskAssignment
         [HttpPost("AddTaskAssignment")]
         public async Task<ResponseDTO<int>> AddTaskAssignment(TaskAssignmentRequestDTO taskAssignmentRequest)
         {
@@ -416,7 +419,7 @@ namespace TMS.API.Controllers
         #endregion
 
         #region UpdateTask
-        [HttpPut]
+        [HttpPut("UpdateTask")]
         public ResponseDTO<int> UpdateTask(TaskRequestDTO taskRequest)
         {
             ResponseDTO<int> response = new ResponseDTO<int>();
@@ -700,8 +703,8 @@ namespace TMS.API.Controllers
         #endregion
 
         #region UpdateTimeSheetApproval
-        [HttpPut("UpdateTimesheetMaster")]
-        public async Task<ResponseDTO<TimeSheetApprovalResponseDTO>> UpdateTimesheetMaster(TimeSheetApprovalRequestDTO approvalRequest)
+        [HttpPut("UpdateTimesheetApproval")]
+        public async Task<ResponseDTO<TimeSheetApprovalResponseDTO>> UpdateTimesheetApproval(TimeSheetApprovalRequestDTO approvalRequest)
         {
             ResponseDTO<TimeSheetApprovalResponseDTO> response = new ResponseDTO<TimeSheetApprovalResponseDTO>();
             int StatusCode = 0;
@@ -798,7 +801,7 @@ namespace TMS.API.Controllers
         #region TimeSheet Master APIs
 
         #region GetTimesheetMaster
-        [HttpGet("{id}")]
+        [HttpGet("GetTimesheetMaster")]
         public async Task<ResponseDTO<TimesheetMasterResponseDTO>> GetTimesheetMaster(int id)
         {
             ResponseDTO<TimesheetMasterResponseDTO> response = new ResponseDTO<TimesheetMasterResponseDTO>();

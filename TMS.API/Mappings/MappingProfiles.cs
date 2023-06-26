@@ -49,6 +49,12 @@ namespace TMS.API.Mappings
 
             CreateMap<InvoiceDetails, InvoiceDetailRequestDTO>()
             .ReverseMap();
+
+            CreateMap<Project, ProjectResponseDTO>()
+            .ReverseMap();
+
+            CreateMap<Project, ProjectRequestDTO>()
+            .ReverseMap();
         }
     }
 }

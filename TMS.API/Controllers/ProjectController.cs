@@ -35,13 +35,13 @@ namespace TMS.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ResponseDTO<Project>> GetProject(int id)
+        [HttpGet("GetProject")]
+        public async Task<ResponseDTO<ProjectResponseDTO>> GetProject(int id)
         {
-            ResponseDTO<Project> response = new ResponseDTO<Project>();
+            ResponseDTO<ProjectResponseDTO> response = new ResponseDTO<ProjectResponseDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            Project Response = null;
+            ProjectResponseDTO Response = null;
             string Message = "";
             string ExceptionMessage = "";
             try
@@ -58,7 +58,8 @@ namespace TMS.API.Controllers
                     StatusCode = 200;
                     isSuccess = true;
                     Message = "Project fetched successfully";
-                    Response = result;
+                    var projectResponse= _mapper.Map<ProjectResponseDTO>(result);
+                    Response = projectResponse;
                 }
             }
             catch (Exception ex)
@@ -77,12 +78,12 @@ namespace TMS.API.Controllers
             return response;
         }
         [HttpGet("GetAllProjects")]
-        public async Task<ResponseDTO<IEnumerable<Project>>> GetAllProjects()
+        public async Task<ResponseDTO<IEnumerable<ProjectResponseDTO>>> GetAllProjects()
         {
-            ResponseDTO<IEnumerable<Project>> response = new ResponseDTO<IEnumerable<Project>>();
+            ResponseDTO<IEnumerable<ProjectResponseDTO>> response = new ResponseDTO<IEnumerable<ProjectResponseDTO>>();
             int StatusCode = 0;
             bool isSuccess = false;
-            IEnumerable<Project> Response = null;
+            IEnumerable<ProjectResponseDTO> Response = null;
             string Message = "";
             string ExceptionMessage = "";
             try
@@ -99,7 +100,8 @@ namespace TMS.API.Controllers
                     StatusCode = 200;
                     isSuccess = true;
                     Message = "Project list fetched successfully";
-                    Response = result;
+                    var projectList = _mapper.Map<List<ProjectResponseDTO>>(result);
+                    Response = projectList;
                 }
             }
             catch (Exception ex)
@@ -158,8 +160,8 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
-        [HttpPut]
-        [HttpPut("{id}")]
+        
+        [HttpPut("UpdateProject")]
         public ResponseDTO<int> UpdateProject(Project project)
         {
             ResponseDTO<int> response = new ResponseDTO<int>();
@@ -203,7 +205,7 @@ namespace TMS.API.Controllers
 
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteProject")]
         public async Task<ResponseDTO<int>> DeleteProject(int id)
         {
             ResponseDTO<int> response = new ResponseDTO<int>();
@@ -333,7 +335,7 @@ namespace TMS.API.Controllers
             return response;
         }
 
-        [HttpPost("GetAllProjectDocuments")]
+        [HttpGet("GetAllProjectDocuments")]
         public async Task<ResponseDTO<List<DocumentResponseDTO>>> GetAllProjectDocuments(int projectId)
         {
             ResponseDTO<List<DocumentResponseDTO>> response = new ResponseDTO<List<DocumentResponseDTO>>();
