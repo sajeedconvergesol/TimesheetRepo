@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,10 +16,41 @@ namespace TMS.Infrastructure.Repository
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<long> AddInvoiceDetails(InvoiceDetails invoiceDetails)
+
+        public async Task<bool> Add(List<InvoiceDetails> invoiceDetails)
         {
-            await _unitOfWork.Context.Set<InvoiceDetails>().AddAsync(invoiceDetails);
-            return invoiceDetails.Id;
+            bool isAdd;
+            try
+            {
+                _unitOfWork.Context.InvoiceDetails.AddRangeAsync(invoiceDetails);
+                _unitOfWork.Commit();
+                isAdd = true;
+            }
+            catch
+            {
+                isAdd = false;
+            }
+            return isAdd;
+        }
+
+        public async Task<int> Delete(int id)
+        {
+            InvoiceDetails invoiceDetails = await _unitOfWork.Context.InvoiceDetails.FindAsync(id);
+            _unitOfWork.Context.InvoiceDetails.Remove(invoiceDetails);
+            _unitOfWork.Commit();
+            return id;
+        }
+
+        public async Task<IEnumerable<InvoiceDetails>> GetAll()
+        {
+            var data = _unitOfWork.Context.InvoiceDetails;
+            return await data.ToListAsync();
+        }
+
+        public async Task<InvoiceDetails> GetById(int id)
+        {
+            var invoiceDetails = await _unitOfWork.Context.InvoiceDetails.Where(x=> x.Id==id).FirstOrDefaultAsync();
+            return invoiceDetails;
         }
     }
 }

@@ -22,17 +22,119 @@ namespace TMS.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("TMS.Core.ApplicationRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -52,149 +154,28 @@ namespace TMS.Infrastructure.Migrations
 
                     b.ToTable("AspNetRoles", (string)null);
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRole");
-
-                    b.UseTphMappingStrategy();
-
                     b.HasData(
                         new
                         {
-                            Id = "1",
-                            Name = "Admin",
-                            NormalizedName = "Admin"
-                        },
-                        new
-                        {
-                            Id = "2",
+                            Id = 1,
                             Name = "Managers",
                             NormalizedName = "Managers"
                         },
                         new
                         {
-                            Id = "3",
+                            Id = 2,
                             Name = "Developers",
                             NormalizedName = "Developers"
                         });
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("LoginProvider", "ProviderKey");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserRole<string>");
-
-                    b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId", "LoginProvider", "Name");
-
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
-
             modelBuilder.Entity("TMS.Core.ApplicationUser", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -249,8 +230,8 @@ namespace TMS.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("ManagerId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("ManagerId")
+                        .HasColumnType("int");
 
                     b.Property<string>("MobileNo")
                         .HasColumnType("nvarchar(max)");
@@ -309,9 +290,9 @@ namespace TMS.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
+                            Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3af742b8-022a-452a-b4e9-3fcc700faed2",
+                            ConcurrencyStamp = "7127c4e8-324f-4842-ad13-936172985a76",
                             Email = "admin@local",
                             EmailConfirmed = true,
                             FirstName = "Admin",
@@ -320,17 +301,17 @@ namespace TMS.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "admin@local",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPIZMPDxEv5HoCYedY3e7Qcw46YvEmOG/85EAE85UjBGQ8SVXut6xp6k34MuK4Q0hA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAiWvtehl70a2zzQKzYr648vvVQQeTenIwzQhWmHxIkIcIyh1Lj4u+7lT90tF/d+2w==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "9f84e371-786d-4189-9fe7-eee2dd740815",
+                            SecurityStamp = "d5e0050c-78ac-453b-b413-fe7f5263216c",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         },
                         new
                         {
-                            Id = "2",
+                            Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9669a1fe-786b-445b-acbf-5049cd872ac5",
+                            ConcurrencyStamp = "83dc047d-aa3f-4f72-839e-8b37cb0efc4c",
                             Email = "manager@local",
                             EmailConfirmed = true,
                             FirstName = "Manager",
@@ -339,12 +320,54 @@ namespace TMS.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "manager@local",
                             NormalizedUserName = "Manager",
-                            PasswordHash = "AQAAAAIAAYagAAAAEM9myuu4F1YGt9s07UvX7xZvX5BQQpWrsATlE4dmCTcrjit28/7f/xFts+v7binD0Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHqTBEzkIbvJ9K3mbl80gEBOPusp65loGqtH+7y8Q6d44aeE6Chx+j+9Vc+PI2vN0g==",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "c0947603-eb1d-4027-8727-15245fd10302",
+                            SecurityStamp = "f33df972-462c-4c11-a162-36227f42a091",
                             TwoFactorEnabled = false,
                             UserName = "Manager"
                         });
+                });
+
+            modelBuilder.Entity("TMS.Core.Category", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("TMS.Core.Invoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("InvoiceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TimeSheetMasterId")
+                        .HasColumnType("int");
+
+                    b.Property<float>("TotalAmount")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("TMS.Core.InvoiceDetails", b =>
@@ -369,44 +392,233 @@ namespace TMS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("InvoiceDetail");
+                    b.ToTable("InvoiceDetails");
                 });
 
-            modelBuilder.Entity("TMS.Core.ApplicationRole", b =>
+            modelBuilder.Entity("TMS.Core.Project", b =>
                 {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.HasDiscriminator().HasValue("ApplicationRole");
-                });
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-            modelBuilder.Entity("TMS.Core.ApplicationUserRole", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUserRole<string>");
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("RoleId1")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UserId1")
+                    b.Property<string>("ProjectName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("RoleId1");
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
-                    b.HasIndex("UserId1");
+                    b.HasKey("Id");
 
-                    b.HasDiscriminator().HasValue("ApplicationUserRole");
+                    b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("TMS.Core.ProjectDocuments", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DocumentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProjectDocuments");
+                });
+
+            modelBuilder.Entity("TMS.Core.TaskAssignment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskStatus")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaskAssignments");
+                });
+
+            modelBuilder.Entity("TMS.Core.Tasks", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EstimatedHours")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TaskDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TaskName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Task");
+                });
+
+            modelBuilder.Entity("TMS.Core.TimeSheetApprovals", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ApprovalStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ApprovalStatusBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TimeSheetMasterId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TimeSheetApprovals");
+                });
+
+            modelBuilder.Entity("TMS.Core.TimeSheetDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Hours")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Period")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TaskAssignmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TimeSheetMasterId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TimeSheetDetails");
+                });
+
+            modelBuilder.Entity("TMS.Core.TimeSheetMaster", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comments")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LastModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LastModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TimeSheetStatus")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ToDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TotalHours")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TimeSheetMaster");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.HasOne("TMS.Core.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.HasOne("TMS.Core.ApplicationUser", null)
                         .WithMany()
@@ -415,7 +627,7 @@ namespace TMS.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
                     b.HasOne("TMS.Core.ApplicationUser", null)
                         .WithMany()
@@ -424,9 +636,9 @@ namespace TMS.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("TMS.Core.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -439,40 +651,13 @@ namespace TMS.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
                     b.HasOne("TMS.Core.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("TMS.Core.ApplicationUserRole", b =>
-                {
-                    b.HasOne("TMS.Core.ApplicationRole", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId1");
-
-                    b.HasOne("TMS.Core.ApplicationUser", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("TMS.Core.ApplicationUser", b =>
-                {
-                    b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("TMS.Core.ApplicationRole", b =>
-                {
-                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

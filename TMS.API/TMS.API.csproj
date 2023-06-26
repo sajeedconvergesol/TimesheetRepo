@@ -30,4 +30,8 @@
     <ProjectReference Include="..\TMS.Services\TMS.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\EmailTemplates\" />
+  </ItemGroup>
+
 </Project>

@@ -144,6 +144,7 @@ namespace TMS.Infrastructure.Repository
         public async Task<IdentityResult> UpdateUser(ApplicationUser obUser)
         {
             obUser.UpdatedOn = DateTime.Now;
+
             var result = await _userManager.UpdateAsync(obUser);
             return result;
         }
@@ -179,12 +180,6 @@ namespace TMS.Infrastructure.Repository
                 IsExists = true;
             }
             return IsExists;
-        }
-        public async Task<IEnumerable<ApplicationUser>> GetActiveUsers(string roleId)
-        {
-            var result = _unitOfWork.Context.Users
-                .Where(x => x.IsActive && x.UserRoles.Any(s => s.RoleId == roleId));
-            return await result.ToListAsync();
         }
     }
 }

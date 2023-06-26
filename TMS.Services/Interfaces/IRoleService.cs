@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMS.Core;
 
 namespace TMS.Services.Interfaces
 {
     public interface IRoleService
     {
-        Task<IEnumerable<IdentityRole>> GetAllRolesAsync();
-        IdentityRole GetByRoleName(string roleName);
+        Task<IEnumerable<ApplicationRole>> GetAllRolesAsync();
+        ApplicationRole GetByRoleName(string roleName);
     }
 }
