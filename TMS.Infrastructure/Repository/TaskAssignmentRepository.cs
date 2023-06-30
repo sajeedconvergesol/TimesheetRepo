@@ -64,6 +64,7 @@ namespace TMS.Infrastructure.Repository
             _unitOfWork.Context.Entry(taskAssignment).State = EntityState.Modified;
             _unitOfWork.Context.TaskAssignments.Update(taskAssignment);
             _unitOfWork.Commit();
+            timesheetAssignmnetUpdate = taskAssignment.Id;
             return timesheetAssignmnetUpdate;
         }
     }

@@ -12,6 +12,7 @@ using System.Text;
 using TMS.API.DTOs;
 using TMS.API.Helpers;
 using TMS.Core;
+using TMS.Infrastructure.Interfaces;
 using TMS.Services.Interfaces;
 using TMS.Services.Services;
 
@@ -19,7 +20,6 @@ namespace TMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -50,19 +50,22 @@ namespace TMS.API.Controllers
             _webHostEnvironment = webHostEnvironment;
             _mailService = mailService;
         }
+
+        #region UserSignIn
         //Post : api/Account
         [AllowAnonymous]
         [HttpPost("SignIn")]
         public async Task<ResponseDTO<LoginResponseDTO>> SignIn([FromBody] LoginRequestDTO model)
         {
             ResponseDTO<LoginResponseDTO> response = new ResponseDTO<LoginResponseDTO>();
-            int StatusCode = 0;
+            int StatusCode = 0; 
             bool isSuccess = false;
             LoginResponseDTO Response = null;
             string Message = "";
             string ExceptionMessage = "";
             try
             {
+
                 var user = await _IUserService.GetUserByEmail(model.Email);
                 if (user != null)
                 {
@@ -164,6 +167,10 @@ namespace TMS.API.Controllers
 
             return response;
         }
+
+        #endregion
+
+        #region GenerateToken
         private string GenerateJSONWebToken(ApplicationUser user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:key"]));
@@ -184,6 +191,12 @@ namespace TMS.API.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+
+        #endregion
+
+        #region UserRegistration
+
+       [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Registration")]
         public async Task<ResponseDTO<ApplicationUser>> Registration(RequestUserDTO newUser)
         {
@@ -196,6 +209,15 @@ namespace TMS.API.Controllers
             try
             {
                 var user = _mapper.Map<ApplicationUser>(newUser);
+                var currentUser = await _userResolverService.GetCurrentUser();
+                user.CreatedBy = currentUser.Id;
+                user.CreatedOn = DateTime.UtcNow;
+                user.UpdatedBy = currentUser.Id;
+                user.UpdatedOn = DateTime.UtcNow;
+                user.EmailConfirmed = true;
+                user.IsActive = true;
+                user.PhoneNumberConfirmed = true;
+                user.SecurityStamp = Guid.NewGuid().ToString("D");
                 IdentityResult result = await _IUserService.CreateAsync(user, newUser.Password, newUser.Role);
                 if (!result.Succeeded)
                 {
@@ -224,7 +246,7 @@ namespace TMS.API.Controllers
                     string wwwrootPath = _webHostEnvironment.WebRootPath;
                     string templateFilePath = Path.Combine(wwwrootPath, "EmailTemplates/Registration_Email_template.html");
                     string htmlTemplate = await System.IO.File.ReadAllTextAsync(templateFilePath);
-                    htmlTemplate = htmlTemplate.Replace("#FullName#", newUser.FirstName + " " + newUser.LastName).Replace("#Password#", newUser.PasswordHash).Replace("#Username#", newUser.UserName).Replace("#Email#", newUser.Email);
+                    htmlTemplate = htmlTemplate.Replace("#FullName#", newUser.FirstName + " " + newUser.LastName).Replace("#Password#", newUser.Password).Replace("#Username#", newUser.UserName).Replace("#Email#", newUser.Email);
 
                     email.Body = new TextPart(TextFormat.Html) { Text = htmlTemplate };
                     MailData mailData = new MailData
@@ -234,15 +256,16 @@ namespace TMS.API.Controllers
                         EmailToId = newUser.Email,
                         EmailToName = newUser.FirstName + " " + newUser.LastName
                     };
-                    var sendMail = _mailService.SendMail(mailData);
-                    if (!sendMail)
-                    {
-                        Message += ", Email Not Send";
-                    }
-                    else
-                    {
-                        Message += ", Email Send";
-                    }
+
+                    //var sendMail = _mailService.SendMail(mailData);
+                    //if (!sendMail)
+                    //{
+                    //    Message += ", Email Not Send";
+                    //}
+                    //else
+                    //{
+                    //    Message += ", Email Send";
+                    //}
                 }
             }
             catch (Exception error)
@@ -259,40 +282,11 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
+        #endregion
 
-        [HttpGet("SignOut")]
-        public async Task<ResponseDTO<string>> SignOut()
-        {
-            ResponseDTO<string> response = new ResponseDTO<string>();
-            int StatusCode = 0;
-            bool isSuccess = false;
-            LoginResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
-            if (User.Identity.Name != null)
-            {
-                _signInManager.SignOutAsync();
-                StatusCode = 200;
-                isSuccess = true;
-                Message = "Account Logout successful.";
-                ExceptionMessage = User.Identity.Name;
-                _logger.LogInformation("Account Logout successful");
-            }
-            else
-            {
-                isSuccess = false;
-                StatusCode = 500;
-                Message = "Failed while Account LogOut. Please Login First";
-            }
+        #region GetUserLoginInformation
 
-            response.StatusCode = StatusCode;
-            response.IsSuccess = isSuccess;
-            response.Message = Message;
-            response.ExceptionMessage = ExceptionMessage;
-            return response;
-        }
-
-        [HttpGet("AccountDetails")]
+        [HttpGet("GetUserLoginInformation")]
         public async Task<ResponseDTO<PostUserDTO>> GetUserLoginInformation(string userId)
         {
             ResponseDTO<PostUserDTO> response = new ResponseDTO<PostUserDTO>();
@@ -336,6 +330,9 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
+        #endregion
+
+        #region ChangePassword
 
         [HttpPost("ChangePassword")]
         public async Task<ResponseDTO<string>> ChangePassword(ChangePasswordDTO vmChangePassword)
@@ -378,8 +375,10 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
+        #endregion
 
-        //not working right now 
+        #region Update Profile
+
         [HttpPut("UpdateUser")]
         public async Task<ResponseDTO<string>> UpdateUser(UpdateUserDTO newUser)
         {
@@ -391,7 +390,8 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-                var user = await _IUserService.GetByUserName(User.Identity.Name);
+                var user = await _userResolverService.GetCurrentUser();
+
                 if (user != null)
                 {
                     ApplicationUser UpdatedUser = new ApplicationUser()
@@ -408,6 +408,8 @@ namespace TMS.API.Controllers
                         Gender = newUser.Gender,
                         ManagerId = newUser.ManagerId,
                         PhoneNumber = newUser.PhoneNumber,
+                        UpdatedBy = user.Id,
+                        UpdatedOn = DateTime.UtcNow
                     };
                     IdentityResult result = await _IUserService.UpdateUser(UpdatedUser);
                     if (!result.Succeeded)
@@ -444,8 +446,121 @@ namespace TMS.API.Controllers
             return response;
         }
 
+        #endregion
+
+        #region GetAllUser
+        [HttpGet("GetAllUser")]
+        public async Task<ResponseDTO<IEnumerable<UserResponseDTO>>> GetAllUser()
+        {
+            ResponseDTO<IEnumerable<UserResponseDTO>> response = new ResponseDTO<IEnumerable<UserResponseDTO>>();
+            int StatusCode = 0;
+            bool isSuccess = false;
+            IEnumerable<UserResponseDTO> Response = null;
+            string Message = "";
+            string ExceptionMessage = "";
+            try
+            {
+               
+                var getAllUser = await _IUserService.GetAllUsers();
+                if (getAllUser == null)
+                {
+                    isSuccess = false;
+                    StatusCode = 400;
+                    Message = "Invalid data";
+                }
+                else
+                {
+                  
+                    StatusCode = 200;
+                    isSuccess = true;
+                    Message = "Successfully Get all user.";
+                    IEnumerable<UserResponseDTO> allUser = _mapper.Map<IEnumerable<UserResponseDTO>>(getAllUser);
+                    Response = allUser;
+                }
+            }
+            catch (Exception ex)
+            {
+                isSuccess = false;
+                StatusCode = 500;
+                Message = "Failed while fetching data.";
+                ExceptionMessage = ex.Message.ToString();
+                _logger.LogError(ex.ToString(), ex);
+            }
+            response.StatusCode = StatusCode;
+            response.IsSuccess = isSuccess;
+            response.Response = Response;
+            response.Message = Message;
+            response.ExceptionMessage = ExceptionMessage;
+            return response;
+        }
+        #endregion
+
+        #region GetAllManagers
+        [HttpGet("GetAllManagers")]
+        public async Task<ResponseDTO<IEnumerable<UserResponseDTO>>> GetAllManagers()
+        {
+            ResponseDTO<IEnumerable<UserResponseDTO>> response = new ResponseDTO<IEnumerable<UserResponseDTO>>();
+            int StatusCode = 0;
+            bool isSuccess = false;
+            IEnumerable<UserResponseDTO> Response = null;
+            string Message = "";
+            string ExceptionMessage = "";
+            try
+            {
+                var getAllUser = await _IUserService.GetAllUsers();
+                if (getAllUser == null)
+                {
+                    isSuccess = false;
+                    StatusCode = 400;
+                    Message = "Invalid data";
+                }
+                else
+                {
+
+                    StatusCode = 200;
+                    isSuccess = true;
+                    Message = "Successfully Get all user.";
+                    IEnumerable<UserResponseDTO> allUser = _mapper.Map<IEnumerable<UserResponseDTO>>(getAllUser);
+                    Response = allUser;
+                    var Roles = "Managers";
+                    var userRole = await _IUserService.GetUsersByRole(Roles);
+
+                    if (userRole == null)
+                    {
+                        isSuccess = false;
+                        StatusCode = 400;
+                        Message = "Invalid data";
+                    }
+                    else
+                    {
+                        StatusCode = 200;
+                        isSuccess = true;
+                        IEnumerable<UserResponseDTO> usersRole = _mapper.Map<IEnumerable<UserResponseDTO>>(userRole);
+                        Message = "Successfully Get all user.";
+                        Response = usersRole;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                isSuccess = false;
+                StatusCode = 500;
+                Message = "Failed while fetching data.";
+                ExceptionMessage = ex.Message.ToString();
+                _logger.LogError(ex.ToString(), ex);
+            }
+            response.StatusCode = StatusCode;
+            response.IsSuccess = isSuccess;
+            response.Response = Response;
+            response.Message = Message;
+            response.ExceptionMessage = ExceptionMessage;
+            return response;
+        }
+        #endregion
+
+        #region ResetPassword
+
         [HttpPost("ResetPassword")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseDTO<string>> ResetPassword(ResetPasswordDTO resetPass)
         {
             ResponseDTO<string> response = new ResponseDTO<string>();
@@ -456,7 +571,55 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-                var user = await _IUserService.GetUserByEmail(resetPass.Email);
+                var user = await _userManager.FindByEmailAsync(resetPass.Email);
+                if (user == null)
+                {
+                    response.StatusCode = 400;
+                    response.IsSuccess = false;
+                    response.Message = "Invalid Email Address, Looks like You have'nt created Account. ";
+                    return response;
+                }
+                else
+                {
+                    var result = await _IUserService.ResetPasswordAsync(user, resetPass.Code, resetPass.NewPassword);
+                    isSuccess = false;
+                    StatusCode = 200;
+                    Message = "Password Changed completed successfully";
+                }
+
+            }
+            catch (Exception error)
+            {
+                isSuccess = false;
+                StatusCode = 500;
+                Message = "Unable to Reset Password";
+                ExceptionMessage = error.Message.ToString();
+                _logger.LogError(error.ToString(), error);
+            }
+            response.StatusCode = StatusCode;
+            response.IsSuccess = isSuccess;
+            response.Message = Message;
+            response.ExceptionMessage = ExceptionMessage;
+            return response;
+
+        }
+        #endregion
+
+        #region ForgetPassword
+        [HttpPost("ForgetPassword")]
+        public async Task<ResponseDTO<string>> ForgetPassword(string Email)
+        {
+            ResponseDTO<string> response = new ResponseDTO<string>();
+            int StatusCode = 0;
+            bool isSuccess = false;
+            LoginResponseDTO Response = null;
+            string Message = "";
+            string ExceptionMessage = "";
+            try
+            {
+                
+                var user = await _userManager.FindByEmailAsync(Email);
+                //var user = await _IUserService.GetUserByEmail(Email);
                 if (user == null)
                 {
                     response.StatusCode = 400;
@@ -466,25 +629,22 @@ namespace TMS.API.Controllers
                 }
 
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var newPassword = UtilityHelper.GenerateRandomPassword(8);
-
-                var result = await _IUserService.ResetPasswordAsync(user, code, newPassword);
-                if (result)
+                //var newPassword = UtilityHelper.GenerateRandomPassword(8);
+                
+                if (Email!=null)
                 {
-                    isSuccess = false;
-                    StatusCode = 200;
-                    Message = "Password Changed completed successfully";
+                    
 
                     // send New Password To Registered Email
                     var email = new MimeMessage();
                     email.From.Add(MailboxAddress.Parse("jay.convergesol@gmail.com"));
-                    email.To.Add(MailboxAddress.Parse(resetPass.Email));
+                    email.To.Add(MailboxAddress.Parse(Email));
                     email.Subject = "Reset Password at TimeSheet Management System";
 
                     string wwwrootPath = _webHostEnvironment.WebRootPath;
                     string templateFilePath = Path.Combine(wwwrootPath, "EmailTemplates/Reset_Password_Email_template.html");
                     string htmlTemplate = await System.IO.File.ReadAllTextAsync(templateFilePath);
-                    htmlTemplate = htmlTemplate.Replace("#FullName#", user.FirstName + " " + user.LastName).Replace("#Password#", newPassword);
+                    htmlTemplate = htmlTemplate.Replace("#FullName#", user.FirstName + " " + user.LastName).Replace("#Code#", code);
 
                     email.Body = new TextPart(TextFormat.Html) { Text = htmlTemplate };
 
@@ -492,17 +652,22 @@ namespace TMS.API.Controllers
                     {
                         EmailBody = htmlTemplate,
                         EmailSubject = "Reset Password at TimeSheet Management System",
-                        EmailToId = resetPass.Email,
-                        EmailToName = resetPass.Email
+                        EmailToId = Email,
+                        EmailToName = Email
                     };
                     var sendMail = _mailService.SendMail(mailData);
                     if (!sendMail)
                     {
-                        Message += ", Email Not Send";
+                        isSuccess = false;
+                        StatusCode =400;
+
+                        Message = "Email Not Send";
                     }
                     else
                     {
-                        Message += ", Email Send";
+                        isSuccess = true;
+                        StatusCode = 200;
+                        Message = " Email Send";
                     }
                 }
                 else
@@ -526,5 +691,43 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
+        #endregion
+
+        #region UserSignOut
+
+        [HttpGet("SignOut")]
+        public async Task<ResponseDTO<string>> SignOut()
+        {
+            ResponseDTO<string> response = new ResponseDTO<string>();
+            int StatusCode = 0;
+            bool isSuccess = false;
+            LoginResponseDTO Response = null;
+            string Message = "";
+            string ExceptionMessage = "";
+            var user = await _userResolverService.GetCurrentUser();
+            if (user != null)
+            {
+                _signInManager.SignOutAsync();
+                StatusCode = 200;
+                isSuccess = true;
+                Message = "Account Logout successful.";
+                ExceptionMessage = User.Identity.Name;
+                _logger.LogInformation("Account Logout successful");
+            }
+            else
+            {
+                isSuccess = false;
+                StatusCode = 500;
+                Message = "Failed while Account LogOut. Please Login First";
+            }
+
+            response.StatusCode = StatusCode;
+            response.IsSuccess = isSuccess;
+            response.Message = Message;
+            response.ExceptionMessage = ExceptionMessage;
+            return response;
+        }
+        #endregion
+
     }
 }

@@ -17,7 +17,7 @@
         public string? Gender { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public int? ManagerId { get; set; }
-        public string? CreatedBy { get; set; }
+        public int? CreatedBy { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }
     }

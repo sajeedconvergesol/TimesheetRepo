@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using TMS.API.DTOs;
 using TMS.Core;
+using TMS.Infrastructure.Repository;
 
 namespace TMS.API.Mappings
 {
@@ -14,8 +15,13 @@ namespace TMS.API.Mappings
             CreateMap<ApplicationUser, RequestUserDTO>()
                .ReverseMap();
 
+            CreateMap<ApplicationUser, UserResponseDTO>()
+                .ReverseMap();
+
             CreateMap<TaskAssignment, TaskAssignmentResponseDTO>()
               .ReverseMap();
+
+
 
             CreateMap<TaskAssignment, TaskAssignmentRequestDTO>()
               .ReverseMap();
@@ -41,6 +47,9 @@ namespace TMS.API.Mappings
             CreateMap<TimeSheetDetails, TimeSheetDetailResponseDTO>()
                 .ReverseMap();
 
+            CreateMap<TimeSheetMaster, TimeSheetMasterRequestDTO>()
+              .ReverseMap();
+            
             CreateMap<Invoice, InvoiceResponseDTO>()
                 .ReverseMap();
 
