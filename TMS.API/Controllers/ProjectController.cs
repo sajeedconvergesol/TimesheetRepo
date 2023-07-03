@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
@@ -23,9 +24,10 @@ namespace TMS.API.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public ProjectController(IProjectService projectService, ILogger<ProjectController> logger,
-            IProjectDocumentService projectDocumentService, IConfiguration configuration, IMapper mapper)
+            IProjectDocumentService projectDocumentService, IConfiguration configuration, IMapper mapper, IWebHostEnvironment webHostEnvironment)
         {
             _mapper = mapper;
             _projectDocumentService = projectDocumentService;
@@ -33,6 +35,7 @@ namespace TMS.API.Controllers
             _logger = logger;
             _configuration = configuration;
             _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet("GetProject")]
@@ -58,7 +61,7 @@ namespace TMS.API.Controllers
                     StatusCode = 200;
                     isSuccess = true;
                     Message = "Project fetched successfully";
-                    var projectResponse= _mapper.Map<ProjectResponseDTO>(result);
+                    var projectResponse = _mapper.Map<ProjectResponseDTO>(result);
                     Response = projectResponse;
                 }
             }
@@ -160,7 +163,7 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
-        
+
         [HttpPut("UpdateProject")]
         public ResponseDTO<int> UpdateProject(Project project)
         {
@@ -248,7 +251,7 @@ namespace TMS.API.Controllers
         }
 
         [HttpPost("UploadProjectDocument")]
-        public async Task<ResponseDTO<string>> UploadProjectDocument(ProjectDocRequestDTO projectDocument)
+        public async Task<ResponseDTO<string>> UploadProjectDocument([FromBody]ProjectDocRequestDTO projectDocument)
         {
             ResponseDTO<string> response = new ResponseDTO<string>();
             int StatusCode = 0;
@@ -298,12 +301,20 @@ namespace TMS.API.Controllers
                         var projectDocumentId = await _projectDocumentService.Add(projectDoc);
                         if (projectDocumentId > 0)
                         {
+                            // Creating Directory if not 
+                            string wwwrootPath = _webHostEnvironment.WebRootPath;
+                            var basePath = Path.Combine(wwwrootPath + "\\" + _configuration.GetSection("ImageUploadFolder").Value + projectDocument.ProjectId);
 
-                            // Crating Directory if not 
-                            var basePath = Path.Combine(Directory.GetCurrentDirectory() + _configuration.GetSection("ImageUploadFolder").Value + projectDocument.ProjectId);
                             fileName = Path.GetFileNameWithoutExtension(projectDocument.File.FileName);
                             bool basePathExists = System.IO.Directory.Exists(basePath);
                             if (!basePathExists) Directory.CreateDirectory(basePath);
+
+                            var filepathwithName = Path.Combine(basePath, fileName);
+                            filepathwithName = filepathwithName + fileExtension;
+                            using (var stream = new FileStream(filepathwithName, FileMode.Create))
+                            {
+                                projectDocument.File.CopyTo(stream);
+                            }
 
                             StatusCode = 200;
                             isSuccess = true;

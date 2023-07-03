@@ -66,6 +66,7 @@ namespace TMS.Infrastructure.Repository
                 Address2 = obUser.Address2,
                 City = obUser.City,
                 State = obUser.State,
+                Country = obUser.Country,
                 PostalCode = obUser.PostalCode,
                 Gender = obUser.Gender,
                 CreatedOn = DateTime.Now,
@@ -127,11 +128,18 @@ namespace TMS.Infrastructure.Repository
         }
         public async Task<ApplicationUser> GetUserByEmail(string userEmail)
         {
+            try { 
             var user = await _userManager.FindByEmailAsync(userEmail);
             if (user != null)
                 return user;
             else
                 return null;
+        }
+            catch(Exception e)
+            {
+                
+            }
+            return null;
         }
         public async Task<ApplicationUser> GetByUserName(string userName)
         {
@@ -180,6 +188,12 @@ namespace TMS.Infrastructure.Repository
                 IsExists = true;
             }
             return IsExists;
+        }
+
+        public async Task<IEnumerable<ApplicationUser>> GetUsersByRole(string role)
+        {
+            var users = await _userManager.GetUsersInRoleAsync(role);
+            return users;
         }
     }
 }

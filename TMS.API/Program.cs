@@ -105,6 +105,16 @@ builder.Services.AddScoped<IUserResolverService, UserResolverService>();
 builder.Services.AddTransient<IMailService, MailService>();
 #endregion
 
+#region Project
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
+#endregion
+
+#region ProjectDocument
+builder.Services.AddScoped<IProjectDocumentRepository, ProjectDocumentRepository>();
+builder.Services.AddScoped<IProjectDocumentService, ProjectDocumentService>();
+#endregion
+
 #endregion
 
 // Automapper
@@ -210,10 +220,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
+
 app.UseCors(builder => builder.AllowAnyOrigin()
                               .AllowAnyHeader()
                               .AllowAnyMethod());

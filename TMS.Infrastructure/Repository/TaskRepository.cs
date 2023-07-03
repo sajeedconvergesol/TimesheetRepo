@@ -62,11 +62,10 @@ namespace TMS.Infrastructure.Repository
 
 		public int Update(Tasks task)
 		{
-            int taskId = 0;
             _unitOfWork.Context.Entry(task).State = EntityState.Modified;
             _unitOfWork.Context.Task.Update(task);
             _unitOfWork.Commit();
-            return taskId;
+            return task.Id;
         }
 	}
 }
