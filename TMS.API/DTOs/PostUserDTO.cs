@@ -12,12 +12,9 @@ namespace TMS.API.DTOs
         [Required(ErrorMessage = "FirstName Required")]
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string CountryCode { get; set; }
-        [MinLength(10),MaxLength(10)]
-        public string PhoneNumber { get; set; }
-        [MinLength(10), MaxLength(10)]
+
         [Required(ErrorMessage = "MobileNumber Required")]
-        public string MobileNumber { get; set; }
+        public string MobileNo { get; set; }
         public string Address1 { get; set; }
         public string Address2 { get; set; }
         public string City { get; set; }

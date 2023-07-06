@@ -18,6 +18,7 @@ using TMS.Services.Services;
 
 namespace TMS.API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -195,8 +196,6 @@ namespace TMS.API.Controllers
         #endregion
 
         #region UserRegistration
-
-       [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Registration")]
         public async Task<ResponseDTO<ApplicationUser>> Registration(RequestUserDTO newUser)
         {
@@ -257,15 +256,15 @@ namespace TMS.API.Controllers
                         EmailToName = newUser.FirstName + " " + newUser.LastName
                     };
 
-                    //var sendMail = _mailService.SendMail(mailData);
-                    //if (!sendMail)
-                    //{
-                    //    Message += ", Email Not Send";
-                    //}
-                    //else
-                    //{
-                    //    Message += ", Email Send";
-                    //}
+                    var sendMail = _mailService.SendMail(mailData);
+                    if (!sendMail)
+                    {
+                        Message += ", Email Not Send";
+                    }
+                    else
+                    {
+                        Message += ", Email Send";
+                    }
                 }
             }
             catch (Exception error)
@@ -345,14 +344,14 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
+                var user = await _userResolverService.GetCurrentUser();
+               
                 var result = await _IUserService.ChangePasswordAsync(vmChangePassword.Email, vmChangePassword.CurrentPassword, vmChangePassword.NewPassword, vmChangePassword.ConfirmPassword);
-
-
                 if (!result)
                 {
                     isSuccess = false;
                     StatusCode = 400;
-                    Message = "possible errors: -Email Does not Exists -Current Password Does not match";
+                    Message = "Email Does not Exists -Current Password Does not match";
                 }
                 else
                 {
@@ -378,7 +377,6 @@ namespace TMS.API.Controllers
         #endregion
 
         #region Update Profile
-
         [HttpPut("UpdateUser")]
         public async Task<ResponseDTO<string>> UpdateUser(UpdateUserDTO newUser)
         {
@@ -391,27 +389,25 @@ namespace TMS.API.Controllers
             try
             {
                 var user = await _userResolverService.GetCurrentUser();
-
+                var userId = user.Id.ToString();
                 if (user != null)
                 {
-                    ApplicationUser UpdatedUser = new ApplicationUser()
-                    {
-                        FirstName = newUser.FirstName,
-                        LastName = newUser.LastName,
-                        PostalCode = newUser.PostalCode,
-                        MobileNo = newUser.MobileNumber,
-                        Address1 = newUser.Address1,
-                        Address2 = newUser.Address2,
-                        City = newUser.City,
-                        State = newUser.State,
-                        Country = newUser.Country,
-                        Gender = newUser.Gender,
-                        ManagerId = newUser.ManagerId,
-                        PhoneNumber = newUser.PhoneNumber,
-                        UpdatedBy = user.Id,
-                        UpdatedOn = DateTime.UtcNow
-                    };
-                    IdentityResult result = await _IUserService.UpdateUser(UpdatedUser);
+                    ApplicationUser existingUser = await _IUserService.GetById(userId);
+                    if(existingUser != null) {
+                        existingUser.FirstName = newUser.FirstName;
+                        existingUser.LastName = newUser.LastName;
+                        existingUser.PostalCode = newUser.PostalCode;
+                        existingUser.MobileNo = newUser.MobileNo;
+                        existingUser.Address1 = newUser.Address1;
+                        existingUser.Address2 = newUser.Address2;
+                        existingUser.City = newUser.City;
+                        existingUser.State = newUser.State;
+                        existingUser.Country = newUser.Country;
+                        existingUser.UpdatedBy = user.Id;
+                        existingUser.UpdatedOn = DateTime.UtcNow;
+                        existingUser.SecurityStamp = user.SecurityStamp;
+                    }
+                    IdentityResult result = await _IUserService.UpdateUser(existingUser);
                     if (!result.Succeeded)
                     {
                         var er = "";
@@ -470,7 +466,6 @@ namespace TMS.API.Controllers
                 }
                 else
                 {
-                  
                     StatusCode = 200;
                     isSuccess = true;
                     Message = "Successfully Get all user.";
@@ -559,7 +554,7 @@ namespace TMS.API.Controllers
         #endregion
 
         #region ResetPassword
-
+        [AllowAnonymous]
         [HttpPost("ResetPassword")]
         public async Task<ResponseDTO<string>> ResetPassword(ResetPasswordDTO resetPass)
         {
@@ -607,6 +602,7 @@ namespace TMS.API.Controllers
 
         #region ForgetPassword
         [HttpPost("ForgetPassword")]
+        [AllowAnonymous]
         public async Task<ResponseDTO<string>> ForgetPassword(string Email)
         {
             ResponseDTO<string> response = new ResponseDTO<string>();
@@ -616,8 +612,7 @@ namespace TMS.API.Controllers
             string Message = "";
             string ExceptionMessage = "";
             try
-            {
-                
+            {           
                 var user = await _userManager.FindByEmailAsync(Email);
                 //var user = await _IUserService.GetUserByEmail(Email);
                 if (user == null)
@@ -627,17 +622,14 @@ namespace TMS.API.Controllers
                     response.Message = "Invalid Email Address, Looks like You have'nt created Account. ";
                     return response;
                 }
-
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 //var newPassword = UtilityHelper.GenerateRandomPassword(8);
                 
                 if (Email!=null)
                 {
-                    
-
                     // send New Password To Registered Email
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("jay.convergesol@gmail.com"));
+                    email.From.Add(MailboxAddress.Parse("rahulmakwana.convergesol@gmail.com"));
                     email.To.Add(MailboxAddress.Parse(Email));
                     email.Subject = "Reset Password at TimeSheet Management System";
 
@@ -660,7 +652,6 @@ namespace TMS.API.Controllers
                     {
                         isSuccess = false;
                         StatusCode =400;
-
                         Message = "Email Not Send";
                     }
                     else
