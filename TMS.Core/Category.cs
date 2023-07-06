@@ -15,7 +15,7 @@ namespace TMS.Core
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id
+        public int  Id
         {
             get => _Id;
             set => _Id = value;

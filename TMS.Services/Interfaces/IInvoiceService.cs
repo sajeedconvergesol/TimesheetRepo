@@ -14,5 +14,6 @@ namespace TMS.Infrastructure.Interfaces
         Task<int> Add(Invoice invoice);
         int Update(Invoice invoice);
         Task<bool> Delete(int id);
+        Task<Invoice> GetInvoiceByTimeSheetId(int id);
     }
 }

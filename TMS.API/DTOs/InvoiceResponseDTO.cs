@@ -7,6 +7,6 @@
         public int CategoryId { get; set; }
         public DateTime InvoiceDate { get; set; }
         public double TotalAmount { get; set; }
-        public List<InvoiceDetailResponseDTO> InvoiceDetails { get; set; } = new List<InvoiceDetailResponseDTO>();
+        public IEnumerable<InvoiceDetailResponseDTO> InvoiceDetails { get; set; } = new List<InvoiceDetailResponseDTO>();
     }
 }

@@ -14,5 +14,6 @@ namespace TMS.Infrastructure.Interfaces
 		Task<int> Add(TaskAssignment taskAssignment);
 		int Update(TaskAssignment taskAssignment);
 		Task<bool> Delete(int id);
+		Task<List<TaskAssignment>> GetTaskAssignedToUser(int userId);
 	}
 }

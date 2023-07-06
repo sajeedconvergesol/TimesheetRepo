@@ -38,6 +38,11 @@ namespace TMS.Services.Services
             return await _taskAssignmentRepository.GetById(id);
         }
 
+        public async Task<List<TaskAssignment>> GetTaskAssignedToUser(int userId)
+        {
+            return await _taskAssignmentRepository.GetTaskAssignedToUser(userId);
+        }
+
         public int Update(TaskAssignment taskAssignment)
         {
             return _taskAssignmentRepository.Update(taskAssignment);

@@ -67,6 +67,7 @@ namespace TMS.API.Mappings
 
             CreateMap<Project, ProjectRequestDTO>()
             .ReverseMap();
+
         }
     }
 }

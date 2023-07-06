@@ -257,15 +257,15 @@ namespace TMS.API.Controllers
                         EmailToName = newUser.FirstName + " " + newUser.LastName
                     };
 
-                    //var sendMail = _mailService.SendMail(mailData);
-                    //if (!sendMail)
-                    //{
-                    //    Message += ", Email Not Send";
-                    //}
-                    //else
-                    //{
-                    //    Message += ", Email Send";
-                    //}
+                    var sendMail = _mailService.SendMail(mailData);
+                    if (!sendMail)
+                    {
+                        Message += ", Email Not Send";
+                    }
+                    else
+                    {
+                        Message += ", Email Send";
+                    }
                 }
             }
             catch (Exception error)

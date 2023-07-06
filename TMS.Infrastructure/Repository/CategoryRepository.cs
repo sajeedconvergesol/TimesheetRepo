@@ -35,8 +35,8 @@ namespace TMS.Infrastructure.Repository
 
         public async Task<IEnumerable<Category>> GetAll()
         {
-            var categories = _unitOfWork.Context.Categories;
-            return await categories.ToListAsync();
+            var data = _unitOfWork.Context.Categories;
+            return await data.ToListAsync();
         }
 
         public async Task<Category> GetById(int id)

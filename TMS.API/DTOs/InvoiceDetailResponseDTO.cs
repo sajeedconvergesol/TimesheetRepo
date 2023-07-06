@@ -4,9 +4,9 @@ namespace TMS.API.DTOs
 {
     public class InvoiceDetailResponseDTO
     {
-        public long Id { get; set; }
-        public long InvoiceId { get; set; }
-        public long TaskAssignmentId { get; set; }
+        public int Id { get; set; }
+        public int InvoiceId { get; set; }
+        public int TaskAssignmentId { get; set; }
         public double HoursBilled { get; set; }
         public double RatePerHour { get; set; }
     }

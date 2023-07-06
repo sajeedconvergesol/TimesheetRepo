@@ -10,22 +10,22 @@ namespace TMS.Core
 {
     public class InvoiceDetails
     {
-        protected long _Id, _InvoiceId, _TaskAssignmentId;
+        protected int _Id, _InvoiceId, _TaskAssignmentId;
         protected double _HoursBilled, _RatePerHour;
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id
+        public int Id
         {
             get => _Id;
             set => _Id = value;
         }
-        public long InvoiceId
+        public int InvoiceId
         {
             get => _InvoiceId;
             set => _InvoiceId = value;
         }
-        public long TaskAssignmentId
+        public int TaskAssignmentId
         {
             get => _TaskAssignmentId;
             set => _TaskAssignmentId = value;
