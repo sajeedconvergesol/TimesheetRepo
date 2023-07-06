@@ -344,7 +344,8 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-                
+                var user = await _userResolverService.GetCurrentUser();
+               
                 var result = await _IUserService.ChangePasswordAsync(vmChangePassword.Email, vmChangePassword.CurrentPassword, vmChangePassword.NewPassword, vmChangePassword.ConfirmPassword);
                 if (!result)
                 {
