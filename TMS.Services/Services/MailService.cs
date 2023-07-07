@@ -31,8 +31,8 @@ namespace TMS.Services.Services
                     MailboxAddress emailTo = new MailboxAddress(mailData.EmailToName, mailData.EmailToId);
                     emailMessage.To.Add(emailTo);
 
-                    emailMessage.Cc.Add(new MailboxAddress("Cc Receiver", "cc@example.com"));
-                    emailMessage.Bcc.Add(new MailboxAddress("Bcc Receiver", "bcc@example.com"));
+                    //emailMessage.Cc.Add(new MailboxAddress("Cc Receiver", "cc@example.com"));
+                   // emailMessage.Bcc.Add(new MailboxAddress("Bcc Receiver", "bcc@example.com"));
 
                     emailMessage.Subject = mailData.EmailSubject;
 

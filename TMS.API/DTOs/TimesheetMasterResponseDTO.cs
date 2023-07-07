@@ -1,4 +1,6 @@
-﻿namespace TMS.API.DTOs
+﻿using TMS.Core;
+
+namespace TMS.API.DTOs
 {
     public class TimesheetMasterResponseDTO
     {
@@ -12,5 +14,6 @@
         public int CreatedBy { get; set; }
         public DateTime LastModifiedOn { get; set; }
         public int LastModifiedBy { get; set; }
+        public IEnumerable<TimeSheetDetails> TimeSheetDetails { get; set; }
     }
 }

@@ -38,6 +38,11 @@ namespace TMS.Services.Services
             return await _invoiceRepository.GetById(id);
         }
 
+        public async Task<Invoice> GetInvoiceByTimeSheetId(int id)
+        {
+            return await _invoiceRepository.GetInvoiceByTimeSheetId(id);
+        }
+
         public int Update(Invoice invoice)
         {
             return _invoiceRepository.Update(invoice);

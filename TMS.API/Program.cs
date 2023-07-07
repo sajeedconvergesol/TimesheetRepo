@@ -115,6 +115,11 @@ builder.Services.AddScoped<IProjectDocumentRepository, ProjectDocumentRepository
 builder.Services.AddScoped<IProjectDocumentService, ProjectDocumentService>();
 #endregion
 
+#region Category
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+#endregion
+
 #endregion
 
 // Automapper

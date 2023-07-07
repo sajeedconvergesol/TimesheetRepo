@@ -67,5 +67,11 @@ namespace TMS.Infrastructure.Repository
             timesheetAssignmnetUpdate = taskAssignment.Id;
             return timesheetAssignmnetUpdate;
         }
+
+        public Task<List<TaskAssignment>> GetTaskAssignedToUser(int userId)
+        {
+            var data = _unitOfWork.Context.TaskAssignments.Where(x => x.EmployeeId == userId).ToListAsync();
+            return data;
+        }
     }
 }

@@ -55,6 +55,12 @@ namespace TMS.Infrastructure.Repository
             return data;
         }
 
+        public async Task<Invoice> GetInvoiceByTimeSheetId(int id)
+        {
+            var data = await _unitOfWork.Context.Invoices.Where(x => x.TimeSheetMasterId == id).SingleOrDefaultAsync();
+            return data;
+        }
+
         public int Update(Invoice invoice)
         {
             _unitOfWork.Context.Entry(invoice).State = EntityState.Modified;

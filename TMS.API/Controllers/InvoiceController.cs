@@ -54,10 +54,16 @@ namespace TMS.API.Controllers
                 }
                 else
                 {
+                    var invoiceDetails = await _invoiceDetailService.GetAll();
+                    invoiceDetails = invoiceDetails.Where(x => x.InvoiceId == invoice.Id).ToList();
+                    var details = _mapper.Map<IEnumerable<InvoiceDetailResponseDTO>>(invoiceDetails);
+                    var data = _mapper.Map<InvoiceResponseDTO>(invoice);
+                    data.InvoiceDetails = details;
+
                     StatusCode = 200;
                     isSuccess = true;
                     Message = "Invoice fetched successfully";
-                    Response = _mapper.Map<InvoiceResponseDTO>(invoice);
+                    Response = data;
                 }
             }
             catch (Exception ex)
@@ -204,5 +210,52 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
+
+        #region  GetInvoiceByTimeSheetId
+
+        [HttpGet("GetInvoiceByTimeSheetId")]
+        public async Task<ResponseDTO<InvoiceResponseDTO>> GetInvoiceByTimeSheetId(int timeSheetId)
+        {
+            ResponseDTO<InvoiceResponseDTO> response = new();
+            int StatusCode = 0;
+            bool isSuccess = false;
+            InvoiceResponseDTO Response = null;
+            string Message = "";
+            string ExceptionMessage = "";
+            try
+            {
+
+                var invoice = await _invoiceService.GetInvoiceByTimeSheetId(timeSheetId);
+                if (invoice == null)
+                {
+                    isSuccess = false;
+                    StatusCode = 400;
+                    Message = "Invoice not found";
+                }
+                else
+                {
+                    StatusCode = 200;
+                    isSuccess = true;
+                    Message = "Invoice fetched successfully";
+                    Response = _mapper.Map<InvoiceResponseDTO>(invoice);
+                }
+            }
+            catch (Exception ex)
+            {
+                isSuccess = false;
+                StatusCode = 500;
+                Message = "Failed while fetching data.";
+                ExceptionMessage = ex.Message.ToString();
+              
+            }
+            response.StatusCode = StatusCode;
+            response.IsSuccess = isSuccess;
+            response.Response = Response;
+            response.Message = Message;
+            response.ExceptionMessage = ExceptionMessage;
+            return response;
+        }
+
+        #endregion
     }
 }

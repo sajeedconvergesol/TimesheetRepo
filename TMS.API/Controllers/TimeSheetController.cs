@@ -229,6 +229,53 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
+
+        #region TaskAssignmentByUserId
+        [HttpGet("TaskAssignmentByUserId")]
+        public async Task<ResponseDTO<List<TaskAssignmentResponseDTO>>> TaskAssignmentByUserId(int userId)
+        {
+            ResponseDTO<List<TaskAssignmentResponseDTO>> response = new ResponseDTO<List<TaskAssignmentResponseDTO>>();
+            int StatusCode = 0;
+            bool isSuccess = false;
+            List<TaskAssignmentResponseDTO> Response = null;
+            string Message = "";
+            string ExceptionMessage = "";
+            try
+            {
+                var taskAssignedToUser = await _taskAssignmentService.GetTaskAssignedToUser(userId);
+                if (taskAssignedToUser == null)
+                {
+                    isSuccess = false;
+                    StatusCode = 400;
+                    Message = "Error occurred while task assignment update";
+                }
+                else
+                {
+                    StatusCode = 200;
+                    isSuccess = true;
+                    Message = "Task assignment updated successfully";
+                    var taskAssignedToUserMaped = _mapper.Map<List<TaskAssignmentResponseDTO>>(taskAssignedToUser);
+                    Response = taskAssignedToUserMaped;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                isSuccess = false;
+                StatusCode = 500;
+                Message = "Failed while fetching data.";
+                ExceptionMessage = ex.Message.ToString();
+                _logger.LogError(ex.ToString(), ex);
+            }
+            response.StatusCode = StatusCode;
+            response.IsSuccess = isSuccess;
+            response.Response = Response;
+            response.Message = Message;
+            response.ExceptionMessage = ExceptionMessage;
+            return response;
+        }
+        #endregion
+
         #endregion
 
         #region DeleteTaskAssignment
@@ -821,10 +868,12 @@ namespace TMS.API.Controllers
                 }
                 else
                 {
+                    var timesheetDetail = await _timesheetDetailsService.GetByTimeSheetMasterId(timesheetMasterId.Id);
                     StatusCode = 200;
                     isSuccess = true;
                     Message = "Valid DataShow";
                     var timeSheet = _mapper.Map<TimesheetMasterResponseDTO>(timesheetMasterId);
+                    timeSheet.TimeSheetDetails = timesheetDetail;
                     Response = timeSheet;
                 }
             }
@@ -871,6 +920,11 @@ namespace TMS.API.Controllers
                     isSuccess = true;
                     Message = "Valid datashow";
                     var timeSheet = _mapper.Map<IEnumerable<TimesheetMasterResponseDTO>>(timeSheetMastersList);
+
+                    foreach (var item in timeSheet)
+                    {
+                        item.TimeSheetDetails = await _timesheetDetailsService.GetByTimeSheetMasterId(item.Id);
+                    }
                     Response = timeSheet;
                 }
             }
@@ -904,7 +958,6 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-
                 var timesheetMasterList = await _timesheetMasterService.GetByUserId(userId);
                 if (timesheetMasterList.Any())
                 {
