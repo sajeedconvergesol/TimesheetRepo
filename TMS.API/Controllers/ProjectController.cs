@@ -251,7 +251,7 @@ namespace TMS.API.Controllers
         }
 
         [HttpPost("UploadProjectDocument")]
-        public async Task<ResponseDTO<string>> UploadProjectDocument([FromBody]ProjectDocRequestDTO projectDocument)
+        public async Task<ResponseDTO<string>> UploadProjectDocument([FromForm] ProjectDocRequestDTO projectDocument)
         {
             ResponseDTO<string> response = new ResponseDTO<string>();
             int StatusCode = 0;
@@ -301,12 +301,15 @@ namespace TMS.API.Controllers
                         var projectDocumentId = await _projectDocumentService.Add(projectDoc);
                         if (projectDocumentId > 0)
                         {
+
                             // Creating Directory if not 
                             string wwwrootPath = _webHostEnvironment.WebRootPath;
-                            var basePath = Path.Combine(wwwrootPath + "\\" + _configuration.GetSection("ImageUploadFolder").Value + projectDocument.ProjectId);
 
-                            fileName = Path.GetFileNameWithoutExtension(projectDocument.File.FileName);
+                            var basePath = Path.Combine(wwwrootPath + "\\" + _configuration.GetSection("ImageUploadFolder").Value + "//" + projectDocument.ProjectId);
+
+                            fileName = Path.GetFileNameWithoutExtension(fileName);
                             bool basePathExists = System.IO.Directory.Exists(basePath);
+
                             if (!basePathExists) Directory.CreateDirectory(basePath);
 
                             var filepathwithName = Path.Combine(basePath, fileName);
@@ -357,10 +360,20 @@ namespace TMS.API.Controllers
             string ExceptionMessage = "";
             try
             {
-                var project = await _projectService.GetById(projectId);
+                var project = await _projectDocumentService.GetByProjectId(projectId);
                 if (project != null)
                 {
-                    var basePath = _configuration.GetSection("BaseURL").Value + _configuration.GetSection("ImageUploadFolder").Value + projectId;
+                    //var basePath = _configuration.GetSection("BaseURL").Value + _configuration.GetSection("ImageUploadFolder").Value + projectId;
+
+                    string wwwrootPath = _webHostEnvironment.WebRootPath;
+
+
+
+                    var basePath = Path.Combine(wwwrootPath + "\\" + _configuration.GetSection("ImageUploadFolder").Value + "\\" + projectId);
+
+
+
+
 
                     bool basePathExists = System.IO.Directory.Exists(basePath);
                     if (basePathExists)
@@ -371,6 +384,9 @@ namespace TMS.API.Controllers
                             var projectDocs = _mapper.Map<List<ProjectDocuments>>(projectDocuments);
                             foreach (var projectDoc in projectDocs)
                             {
+
+                                basePath = Path.Combine(_configuration.GetSection("BaseURL").Value + _configuration.GetSection("ImageUploadFolder").Value + "/" + projectId);
+
                                 var docPath = basePath + "/" + projectDoc.DocumentName;
 
                                 DocumentResponseDTO documentResponse = new DocumentResponseDTO()
@@ -378,7 +394,11 @@ namespace TMS.API.Controllers
                                     ProjectId = projectId,
                                     DocumentUrl = docPath,
                                     Id = projectDoc.Id,
-                                    DocumentName = projectDoc.DocumentName
+                                    DocumentName = projectDoc.DocumentName,
+                                    CreatedBy = projectDoc.CreatedBy,
+                                    CreatedOn = projectDoc.CreatedOn,
+                                    LastModifiedBy = projectDoc.LastModifiedBy,
+                                    ModifiedOn = projectDoc.ModifiedOn
                                 };
                                 Response.Add(documentResponse);
                             }
