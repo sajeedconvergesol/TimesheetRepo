@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMS.Core;
 using TMS.Infrastructure.Interfaces;
 using TMS.Services.Interfaces;
 
@@ -17,12 +18,12 @@ namespace TMS.Services.Services
             _iRoleRepository = iRoleRepository;
         }
 
-        public async Task<IEnumerable<IdentityRole>> GetAllRolesAsync()
+        public async Task<IEnumerable<ApplicationRole>> GetAllRolesAsync()
         {
             return await _iRoleRepository.GetAllRoles();
         }
 
-        public IdentityRole GetByRoleName(string roleName)
+        public ApplicationRole GetByRoleName(string roleName)
         {
             return _iRoleRepository.GetByRoleName(roleName);
         }

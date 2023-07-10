@@ -9,6 +9,9 @@ namespace TMS.Services.Interfaces
 {
     public interface IInvoiceDetailService
     {
-        Task<long> AddInvoiceDetails(InvoiceDetails invoiceDetails);
+        Task<IEnumerable<InvoiceDetails>> GetAll();
+        Task<InvoiceDetails> GetById(int id);
+        Task<bool> Add(List<InvoiceDetails> invoiceDetails);
+        Task<int> Delete(int id);
     }
 }

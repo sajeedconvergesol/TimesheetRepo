@@ -12,6 +12,7 @@ namespace TMS.Infrastructure.Interfaces
     {
         Task<IEnumerable<ApplicationUser>> GetAllUsers(int offset, int pageSize);
         Task<IEnumerable<ApplicationUser>> GetAllUsers();
+        Task<IEnumerable<ApplicationUser>> GetUsersByRole(string role);
         Task<IEnumerable<ApplicationUser>> GetActiveUsers(int offset, int pageSize);
         Task<IdentityResult> Create(ApplicationUser user, string password, string role);
         Task<bool> ConfirmEmail(string userId, string code);
@@ -24,6 +25,5 @@ namespace TMS.Infrastructure.Interfaces
         Task<ApplicationUser> GetById(string id);
         Task<ApplicationUser> GetByUserName(string userName);
         Task<bool> IsExists(string email);
-        Task<IEnumerable<ApplicationUser>> GetActiveUsers(string roleId);
     }
 }

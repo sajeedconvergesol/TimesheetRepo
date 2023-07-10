@@ -66,6 +66,11 @@ namespace TMS.Infrastructure.Repository
                 Address2 = obUser.Address2,
                 City = obUser.City,
                 State = obUser.State,
+                UpdatedBy = obUser.UpdatedBy,
+                UpdatedOn = obUser.UpdatedOn,
+                ManagerId = obUser.ManagerId,
+                DateOfBirth = obUser.DateOfBirth,
+                Country = obUser.Country,
                 PostalCode = obUser.PostalCode,
                 Gender = obUser.Gender,
                 CreatedOn = DateTime.Now,
@@ -127,11 +132,18 @@ namespace TMS.Infrastructure.Repository
         }
         public async Task<ApplicationUser> GetUserByEmail(string userEmail)
         {
+            try { 
             var user = await _userManager.FindByEmailAsync(userEmail);
             if (user != null)
                 return user;
             else
                 return null;
+        }
+            catch(Exception e)
+            {
+                
+            }
+            return null;
         }
         public async Task<ApplicationUser> GetByUserName(string userName)
         {
@@ -144,6 +156,7 @@ namespace TMS.Infrastructure.Repository
         public async Task<IdentityResult> UpdateUser(ApplicationUser obUser)
         {
             obUser.UpdatedOn = DateTime.Now;
+
             var result = await _userManager.UpdateAsync(obUser);
             return result;
         }
@@ -180,11 +193,11 @@ namespace TMS.Infrastructure.Repository
             }
             return IsExists;
         }
-        public async Task<IEnumerable<ApplicationUser>> GetActiveUsers(string roleId)
+
+        public async Task<IEnumerable<ApplicationUser>> GetUsersByRole(string role)
         {
-            var result = _unitOfWork.Context.Users
-                .Where(x => x.IsActive && x.UserRoles.Any(s => s.RoleId == roleId));
-            return await result.ToListAsync();
+            var users = await _userManager.GetUsersInRoleAsync(role);
+            return users;
         }
     }
 }

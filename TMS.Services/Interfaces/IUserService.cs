@@ -20,10 +20,12 @@ namespace TMS.Services.Interfaces
         Task<ApplicationUser> GetUserByEmail(string userEmail);
         Task<IdentityResult> UpdateUser(ApplicationUser obUser);
         Task<IList<string>> GetUserRole(ApplicationUser obUser);
+
+        Task<IEnumerable<ApplicationUser>> GetUsersByRole(string role);
+
         Task<bool> DeleteAsync(string userId);
         Task<ApplicationUser> GetById(string id);
         Task<ApplicationUser> GetByUserName(string userName);
         Task<bool> IsExists(string email);
-        Task<IEnumerable<ApplicationUser>> GetActiveUsers(string roleId);
     }
 }

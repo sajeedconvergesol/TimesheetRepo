@@ -10,17 +10,17 @@ namespace TMS.Core
 {
     public class Category
     {
-        protected long _Id;
+        protected int _Id;
         protected string _CategoryName;
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id
+        public int  Id
         {
             get => _Id;
             set => _Id = value;
         }
-        public string ExperienceLevelName
+        public string CategoryName
         {
             get => _CategoryName;
             set =>_CategoryName=value;

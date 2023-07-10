@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMS.Core", "TMS.Core\TMS.Core.csproj", "{0031A3E8-0068-461D-9C2D-BA5C3D85C497}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TMS.Core", "TMS.Core\TMS.Core.csproj", "{0031A3E8-0068-461D-9C2D-BA5C3D85C497}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMS.Infrastructure", "TMS.Infrastructure\TMS.Infrastructure.csproj", "{DFC9D12B-A015-4742-A119-C97DEDB5F41A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TMS.Infrastructure", "TMS.Infrastructure\TMS.Infrastructure.csproj", "{DFC9D12B-A015-4742-A119-C97DEDB5F41A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMS.Services", "TMS.Services\TMS.Services.csproj", "{F2A19C04-1297-4798-8BE2-179ED4C67E6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TMS.Services", "TMS.Services\TMS.Services.csproj", "{F2A19C04-1297-4798-8BE2-179ED4C67E6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TMS.API", "TMS.API\TMS.API.csproj", "{4945B53D-7F23-4A37-89F7-E3D0F436A69E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TMS.API", "TMS.API\TMS.API.csproj", "{4945B53D-7F23-4A37-89F7-E3D0F436A69E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

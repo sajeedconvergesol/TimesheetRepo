@@ -11,7 +11,7 @@ using TMS.Core;
 
 namespace TMS.Infrastructure.Context
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
     {
         //public ApplicationDbContext(){}
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -20,40 +20,45 @@ namespace TMS.Infrastructure.Context
         }
 
         #region Entities
-        public DbSet<InvoiceDetails> InvoiceDetail { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<InvoiceDetails> InvoiceDetails { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<ProjectDocuments> ProjectDocuments { get; set; }
+        public DbSet<TaskAssignment> TaskAssignments { get; set; }
+        public DbSet<Tasks> Task { get; set; }
+        public DbSet<TimeSheetApprovals> TimeSheetApprovals { get; set; }
+        public DbSet<TimeSheetDetails> TimeSheetDetails { get; set; }
+        public DbSet<TimeSheetMaster> TimeSheetMaster { get; set; }
+
         #endregion
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<IdentityRole>().HasData(new IdentityRole
+            
+            builder.Entity<ApplicationRole>().HasData(new ApplicationRole
             {
-                Id = "1",
-                Name = "Admin",
-                NormalizedName = "Admin"
-            });
-            builder.Entity<IdentityRole>().HasData(new IdentityRole
-            {
-                Id = "2",
+                Id = 1,
                 Name = "Managers",
                 NormalizedName = "Managers"
             });
-            builder.Entity<IdentityRole>().HasData(new IdentityRole
+            builder.Entity<ApplicationRole>().HasData(new ApplicationRole
             {
-                Id = "3",
+                Id = 2,
                 Name = "Developers",
                 NormalizedName = "Developers"
             });
             var hasher = new PasswordHasher<ApplicationUser>();
             builder.Entity<ApplicationUser>().HasData(new ApplicationUser
             {
-                Id = "1",
+                Id = 1,
                 UserName = "admin",
                 NormalizedUserName = "admin",
                 FirstName = "Admin",
                 LastName = "Admin",
                 IsActive = true,
-                Email = "admin@local",
-                NormalizedEmail = "admin@local",
+                Email = "admin@local.com",
+                NormalizedEmail = "admin@local.com",
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true,
                 PasswordHash = hasher.HashPassword(null, "Admin@123"),
@@ -61,21 +66,21 @@ namespace TMS.Infrastructure.Context
             });
             builder.Entity<ApplicationUser>().HasData(new ApplicationUser
             {
-                Id = "2",
+                Id = 2,
                 UserName = "Manager",
                 NormalizedUserName = "Manager",
                 FirstName = "Manager",
                 LastName = "Manager",
                 IsActive = true,
-                Email = "manager@local",
-                NormalizedEmail = "manager@local",
+                Email = "manager@local.com",
+                NormalizedEmail = "manager@local.com",
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true,
                 PasswordHash = hasher.HashPassword(null, "Manager@123"),
                 SecurityStamp = Guid.NewGuid().ToString("D"),
             });
-            
             base.OnModelCreating(builder);
+
         }
     }
 }
