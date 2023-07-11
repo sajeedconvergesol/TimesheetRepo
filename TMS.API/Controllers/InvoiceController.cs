@@ -148,7 +148,7 @@ namespace TMS.API.Controllers
                 {
                     //Mapping the Invoice Model to InvoiceRequestDTO
                     var invoice = _mapper.Map<Invoice>(invoiceRequestDTO);
-                    var invoiceDetails = _mapper.Map<List<InvoiceDetails>>(invoiceRequestDTO.InvoiceDetailRequestDTO);
+                    List<InvoiceDetails> invoiceDetails = _mapper.Map<List<InvoiceDetails>>(invoiceRequestDTO.InvoiceDetailRequestDTO);
 
                     double ratePerHour = 0;
                     if (invoiceDetails.Any())
