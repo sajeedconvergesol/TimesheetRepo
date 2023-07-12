@@ -345,19 +345,28 @@ namespace TMS.API.Controllers
             try
             {
                 var user = await _userResolverService.GetCurrentUser();
-               
-                var result = await _IUserService.ChangePasswordAsync(vmChangePassword.Email, vmChangePassword.CurrentPassword, vmChangePassword.NewPassword, vmChangePassword.ConfirmPassword);
+                if (user.Email == vmChangePassword.Email)
+                {
+                    var result = await _IUserService.ChangePasswordAsync(vmChangePassword.Email, vmChangePassword.CurrentPassword, vmChangePassword.NewPassword, vmChangePassword.ConfirmPassword);
                 if (!result)
                 {
                     isSuccess = false;
                     StatusCode = 400;
                     Message = "Email Does not Exists -Current Password Does not match";
                 }
+
                 else
                 {
                     isSuccess = true;
                     StatusCode = 200;
                     Message = "New Password Created";
+                }
+                }
+                else
+                {
+                    isSuccess = false;
+                    StatusCode = 400;
+                    Message = "User Not Found!";
                 }
             }
             catch (Exception error)

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
+using MimeKit.Text;
 using TMS.API.DTOs;
 using TMS.API.Enums;
 using TMS.Core;
@@ -24,6 +26,11 @@ namespace TMS.API.Controllers
         private readonly IUserResolverService _userResolverService;
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
+        private readonly IConfiguration _config;
+        private readonly IUserService _userService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IProjectService _projectService;
+        private readonly IMailService _mailService;
 
         #region Ctor
         public TimeSheetController(ITimesheetMasterService timesheetMasterService,
@@ -32,7 +39,7 @@ namespace TMS.API.Controllers
            ITaskService taskService,
            ITimesheetApprovalsService timesheetApprovalsService,
            IUserResolverService userResolverService,
-           ILogger<TimeSheetController> logger, IMapper mapper)
+           ILogger<TimeSheetController> logger, IMapper mapper, IConfiguration config,IUserService userService, IWebHostEnvironment webHostEnvironment, IProjectService projectService, IMailService mailService)
         {
             _timesheetMasterService = timesheetMasterService;
             _timesheetDetailsService = timesheetDetailsService;
@@ -42,6 +49,11 @@ namespace TMS.API.Controllers
             _userResolverService = userResolverService;
             _logger = logger;
             _mapper = mapper;
+            _config = config;
+            _userService = userService;
+            _webHostEnvironment = webHostEnvironment;
+            _projectService = projectService;
+            _mailService = mailService;
         }
         #endregion
 
@@ -162,6 +174,40 @@ namespace TMS.API.Controllers
                 }
                 else
                 {
+                    var employee = await _userService.GetById(taskAssignmentRequest.EmployeeId.ToString());
+                    var createdBy = await _userService.GetById(taskAssignmentRequest.CreatedBy.ToString());
+                    var project = await _projectService.GetById(taskAssignmentRequest.ProjectId);
+                    var task = await _taskService.GetById(taskAssignmentRequest.TaskId);
+
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse(_config["EmailSender:SenderEmail"]));
+                    email.To.Add(MailboxAddress.Parse(employee.Email));
+                    email.Subject = "New Task Assigned";
+
+                    string wwwrootPath = _webHostEnvironment.WebRootPath;
+                    string templateFilePath = Path.Combine(wwwrootPath, "EmailTemplates/Task_Notification_Email_template.html");
+                    string htmlTemplate = await System.IO.File.ReadAllTextAsync(templateFilePath);
+                    htmlTemplate = htmlTemplate.Replace("#UserName#", employee.FirstName + " " + employee.LastName).Replace("#ProjectTitle#", project.ProjectName).Replace("#TaskTitle#", task.TaskName).Replace("#TaskDueDate#", taskAssignmentRequest.DueDate.ToShortDateString()).Replace("#CreatedBy#", createdBy.FirstName+" "+createdBy.LastName);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = htmlTemplate };
+                    MailData mailData = new MailData
+                    {
+                        EmailBody = htmlTemplate,
+                        EmailSubject = "New Task Assigned",
+                        EmailToId = employee.Email,
+                        EmailToName = employee.FirstName + " " + employee.LastName
+                    };
+
+                    var sendMail = _mailService.SendMail(mailData);
+                    if (!sendMail)
+                    {
+                        Message += ",Email Not Send";
+                    }
+                    else
+                    {
+                        Message += ",Email Send";
+                    }
+
                     StatusCode = 200;
                     isSuccess = true;
                     Message = "Task assigned successfully";
