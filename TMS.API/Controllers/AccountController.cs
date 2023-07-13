@@ -403,6 +403,7 @@ namespace TMS.API.Controllers
                 {
                     ApplicationUser existingUser = await _IUserService.GetById(userId);
                     if(existingUser != null) {
+                        existingUser.UserName = newUser.UserName;
                         existingUser.FirstName = newUser.FirstName;
                         existingUser.LastName = newUser.LastName;
                         existingUser.PostalCode = newUser.PostalCode;
@@ -450,7 +451,6 @@ namespace TMS.API.Controllers
             response.ExceptionMessage = ExceptionMessage;
             return response;
         }
-
         #endregion
 
         #region GetAllUser
@@ -475,10 +475,19 @@ namespace TMS.API.Controllers
                 }
                 else
                 {
+                    IEnumerable<UserResponseDTO> allUser = _mapper.Map<IEnumerable<UserResponseDTO>>(getAllUser);
+                    foreach (var item in getAllUser)
+                    {
+                        var UserRoleFetch = await _IUserService.GetUserRole(item);
+                        var thisUserRole = allUser.Single(x => x.Id == item.Id);
+                        thisUserRole.UserRole = UserRoleFetch.First().ToString();
+                          
+                    }
+
+
                     StatusCode = 200;
                     isSuccess = true;
                     Message = "Successfully Get all user.";
-                    IEnumerable<UserResponseDTO> allUser = _mapper.Map<IEnumerable<UserResponseDTO>>(getAllUser);
                     Response = allUser;
                 }
             }
