@@ -453,6 +453,68 @@ namespace TMS.API.Controllers
         }
         #endregion
 
+        #region Update Profile
+        [HttpPut("UpdateUserStatus")]
+        public async Task<ResponseDTO<UserResponseDTO>> UpdateUserStatus(int id)
+        {
+            ResponseDTO<UserResponseDTO> response = new ResponseDTO<UserResponseDTO>();
+            int StatusCode = 0;
+            bool isSuccess = false;
+            UserResponseDTO Response = null;
+            string Message = "";
+            string ExceptionMessage = "";
+            try
+            {
+                    ApplicationUser existingUser = await _IUserService.GetById(id.ToString());
+                    if (existingUser != null)
+                    {
+                        if(existingUser.IsActive == true)
+                        {
+                            existingUser.IsActive = false;
+                        }
+                        else
+                        {
+                            existingUser.IsActive = true;
+
+                        }
+                    }
+                    IdentityResult result = await _IUserService.UpdateUser(existingUser);
+                var userDTO = _mapper.Map<UserResponseDTO>(existingUser);
+                if (!result.Succeeded)
+                    {
+                        var er = "";
+                        foreach (var error in result.Errors)
+                        {
+                            er += " " + error.Description + " [+] ";
+                        }
+                        isSuccess = false;
+                        StatusCode = 400;
+                        Message = er;
+                    }
+                    else
+                    {
+                        isSuccess = true;
+                        StatusCode = 200;
+                        Message = "Updated Status successfully";
+                        Response = userDTO;
+                    }
+            }
+            catch (Exception error)
+            {
+                isSuccess = false;
+                StatusCode = 500;
+                Message = "Something Went Wrong!";
+                ExceptionMessage = error.Message.ToString();
+                _logger.LogError(error.ToString(), error);
+            }
+            response.StatusCode = StatusCode;
+            response.IsSuccess = isSuccess;
+            response.Message = Message;
+            response.ExceptionMessage = ExceptionMessage;
+            return response;
+        }
+        #endregion
+
         #region GetAllUser
         [HttpGet("GetAllUser")]
         public async Task<ResponseDTO<IEnumerable<UserResponseDTO>>> GetAllUser()
