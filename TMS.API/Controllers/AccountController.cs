@@ -599,7 +599,6 @@ namespace TMS.API.Controllers
                     StatusCode = 200;
                     Message = "Password Changed completed successfully";
                 }
-
             }
             catch (Exception error)
             {
