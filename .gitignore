@@ -398,3 +398,5 @@ FodyWeavers.xsd
 *.sln.iml
 /TMS.API/appsettings.json
 /TMS.API/appsettings.json
+/.sonarqube
+/TMS.API/appsettings.json
