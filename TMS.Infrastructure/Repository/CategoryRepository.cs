@@ -27,7 +27,7 @@ namespace TMS.Infrastructure.Repository
 
         public async Task<int> Delete(int id)
         {
-            Category category = await _unitOfWork.Context.Categories.FindAsync(id);
+            Category? category = await _unitOfWork.Context.Categories.FindAsync(id);
             _unitOfWork.Context.Categories.Remove(category);
             await _unitOfWork.Context.SaveChangesAsync();
             return id;

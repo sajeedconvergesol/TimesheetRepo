@@ -61,9 +61,9 @@ namespace TMS.API.Controllers
             ResponseDTO<LoginResponseDTO> response = new ResponseDTO<LoginResponseDTO>();
             int StatusCode = 0; 
             bool isSuccess = false;
-            LoginResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            LoginResponseDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
 
@@ -202,9 +202,8 @@ namespace TMS.API.Controllers
             ResponseDTO<ApplicationUser> response = new ResponseDTO<ApplicationUser>();
             int StatusCode = 0;
             bool isSuccess = false;
-            LoginResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var user = _mapper.Map<ApplicationUser>(newUser);
@@ -220,10 +219,10 @@ namespace TMS.API.Controllers
                 IdentityResult result = await _IUserService.CreateAsync(user, newUser.Password, newUser.Role);
                 if (!result.Succeeded)
                 {
-                    var er = "";
+                    var er = string.Empty;
                     foreach (var error in result.Errors)
                     {
-                        er += " " + error.Description + " [+] ";
+                        er += error.Description;
                     }
                     isSuccess = false;
                     StatusCode = 400;
@@ -291,9 +290,9 @@ namespace TMS.API.Controllers
             ResponseDTO<PostUserDTO> response = new ResponseDTO<PostUserDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            PostUserDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            PostUserDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
 
             try
             {
@@ -339,9 +338,8 @@ namespace TMS.API.Controllers
             ResponseDTO<string> response = new ResponseDTO<string>();
             int StatusCode = 0;
             bool isSuccess = false;
-            LoginResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var user = await _userResolverService.GetCurrentUser();
@@ -392,9 +390,8 @@ namespace TMS.API.Controllers
             ResponseDTO<string> response = new ResponseDTO<string>();
             int StatusCode = 0;
             bool isSuccess = false;
-            string Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var user = await _userResolverService.GetCurrentUser();
@@ -416,24 +413,32 @@ namespace TMS.API.Controllers
                         existingUser.UpdatedBy = user.Id;
                         existingUser.UpdatedOn = DateTime.UtcNow;
                         existingUser.SecurityStamp = user.SecurityStamp;
-                    }
-                    IdentityResult result = await _IUserService.UpdateUser(existingUser);
-                    if (!result.Succeeded)
-                    {
-                        var er = "";
-                        foreach (var error in result.Errors)
+
+
+                        IdentityResult result = await _IUserService.UpdateUser(existingUser);
+                        if (!result.Succeeded)
                         {
-                            er += " " + error.Description + " [+] ";
+                            var er = string.Empty;
+                            foreach (var error in result.Errors)
+                            {
+                                er += error.Description;
+                            }
+                            isSuccess = false;
+                            StatusCode = 400;
+                            Message = er;
                         }
-                        isSuccess = false;
-                        StatusCode = 400;
-                        Message = er;
+                        else
+                        {
+                            isSuccess = true;
+                            StatusCode = 200;
+                            Message = "Updated User successfully";
+                        }
                     }
                     else
                     {
-                        isSuccess = true;
-                        StatusCode = 200;
-                        Message = "Updated User successfully";
+                        isSuccess = false;
+                        StatusCode = 400;
+                        Message = "Updated not found";
                     }
                 }
             }
@@ -460,9 +465,9 @@ namespace TMS.API.Controllers
             ResponseDTO<IEnumerable<UserResponseDTO>> response = new ResponseDTO<IEnumerable<UserResponseDTO>>();
             int StatusCode = 0;
             bool isSuccess = false;
-            IEnumerable<UserResponseDTO> Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            IEnumerable<UserResponseDTO>? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                
@@ -483,7 +488,6 @@ namespace TMS.API.Controllers
                         thisUserRole.UserRole = UserRoleFetch.First().ToString();
                           
                     }
-
 
                     StatusCode = 200;
                     isSuccess = true;
@@ -515,9 +519,9 @@ namespace TMS.API.Controllers
             ResponseDTO<IEnumerable<UserResponseDTO>> response = new ResponseDTO<IEnumerable<UserResponseDTO>>();
             int StatusCode = 0;
             bool isSuccess = false;
-            IEnumerable<UserResponseDTO> Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            IEnumerable<UserResponseDTO>? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var getAllUser = await _IUserService.GetAllUsers();
@@ -529,7 +533,6 @@ namespace TMS.API.Controllers
                 }
                 else
                 {
-
                     StatusCode = 200;
                     isSuccess = true;
                     Message = "Successfully Get all user.";
@@ -579,9 +582,8 @@ namespace TMS.API.Controllers
             ResponseDTO<string> response = new ResponseDTO<string>();
             int StatusCode = 0;
             bool isSuccess = false;
-            LoginResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var user = await _userManager.FindByEmailAsync(resetPass.Email);
@@ -625,9 +627,8 @@ namespace TMS.API.Controllers
             ResponseDTO<string> response = new ResponseDTO<string>();
             int StatusCode = 0;
             bool isSuccess = false;
-            LoginResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {           
                 var user = await _userManager.FindByEmailAsync(Email);
@@ -704,22 +705,21 @@ namespace TMS.API.Controllers
         #region UserSignOut
 
         [HttpGet("SignOut")]
-        public async Task<ResponseDTO<string>> SignOut()
+        public async Task<ResponseDTO<string>> LogOut()
         {
             ResponseDTO<string> response = new ResponseDTO<string>();
             int StatusCode = 0;
             bool isSuccess = false;
-            LoginResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            string? Response = null;
+            string Message = string.Empty;
             var user = await _userResolverService.GetCurrentUser();
             if (user != null)
             {
-                _signInManager.SignOutAsync();
+                await _signInManager.SignOutAsync();
                 StatusCode = 200;
                 isSuccess = true;
                 Message = "Account Logout successful.";
-                ExceptionMessage = User.Identity.Name;
+                Response = User.Identity.Name;
                 _logger.LogInformation("Account Logout successful");
             }
             else
@@ -732,7 +732,7 @@ namespace TMS.API.Controllers
             response.StatusCode = StatusCode;
             response.IsSuccess = isSuccess;
             response.Message = Message;
-            response.ExceptionMessage = ExceptionMessage;
+            response.Response = Response;
             return response;
         }
         #endregion

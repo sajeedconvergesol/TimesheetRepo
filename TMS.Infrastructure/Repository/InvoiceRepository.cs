@@ -30,7 +30,7 @@ namespace TMS.Infrastructure.Repository
             bool isDeleted;
             try
             {
-                Invoice invoiceDetails = await _unitOfWork.Context.Invoices.Where(x => x.Id == id).FirstOrDefaultAsync();
+                Invoice invoiceDetails = await _unitOfWork.Context.Invoices.SingleAsync(x => x.Id == id);
                 _unitOfWork.Context.Invoices.Remove(invoiceDetails);
                 _unitOfWork.Commit();
                 isDeleted = true;

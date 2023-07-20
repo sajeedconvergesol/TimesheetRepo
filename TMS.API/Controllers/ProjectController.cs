@@ -44,9 +44,9 @@ namespace TMS.API.Controllers
             ResponseDTO<ProjectResponseDTO> response = new ResponseDTO<ProjectResponseDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            ProjectResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            ProjectResponseDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var result = await _projectService.GetById(id);
@@ -86,9 +86,9 @@ namespace TMS.API.Controllers
             ResponseDTO<IEnumerable<ProjectResponseDTO>> response = new ResponseDTO<IEnumerable<ProjectResponseDTO>>();
             int StatusCode = 0;
             bool isSuccess = false;
-            IEnumerable<ProjectResponseDTO> Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            IEnumerable<ProjectResponseDTO>? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var result = await _projectService.GetAll();
@@ -129,8 +129,8 @@ namespace TMS.API.Controllers
             int StatusCode = 0;
             bool isSuccess = false;
             int Response = 0;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var projectId = await _projectService.Add(project);
@@ -171,8 +171,8 @@ namespace TMS.API.Controllers
             int StatusCode = 0;
             bool isSuccess = false;
             int Response = 0;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 int existingProjectId = _projectService.Update(project);
@@ -215,8 +215,8 @@ namespace TMS.API.Controllers
             int StatusCode = 0;
             bool isSuccess = false;
             int Response = 0;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 await _projectService.Delete(id);
@@ -256,9 +256,9 @@ namespace TMS.API.Controllers
             ResponseDTO<string> response = new ResponseDTO<string>();
             int StatusCode = 0;
             bool isSuccess = false;
-            string Response = "";
-            string Message = "";
-            string ExceptionMessage = "";
+            string Response = string.Empty;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var project = await _projectService.GetById(projectDocument.ProjectId);
@@ -356,24 +356,16 @@ namespace TMS.API.Controllers
             int StatusCode = 0;
             bool isSuccess = false;
             List<DocumentResponseDTO> Response = new();
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var project = await _projectDocumentService.GetByProjectId(projectId);
                 if (project != null)
                 {
-                    //var basePath = _configuration.GetSection("BaseURL").Value + _configuration.GetSection("ImageUploadFolder").Value + projectId;
-
                     string wwwrootPath = _webHostEnvironment.WebRootPath;
 
-
-
                     var basePath = Path.Combine(wwwrootPath + "\\" + _configuration.GetSection("ImageUploadFolder").Value + "\\" + projectId);
-
-
-
-
 
                     bool basePathExists = System.IO.Directory.Exists(basePath);
                     if (basePathExists)
@@ -384,7 +376,6 @@ namespace TMS.API.Controllers
                             var projectDocs = _mapper.Map<List<ProjectDocuments>>(projectDocuments);
                             foreach (var projectDoc in projectDocs)
                             {
-
                                 basePath = Path.Combine(_configuration.GetSection("BaseURL").Value + _configuration.GetSection("ImageUploadFolder").Value + "/" + projectId);
 
                                 var docPath = basePath + "/" + projectDoc.DocumentName;

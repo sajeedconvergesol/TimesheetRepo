@@ -66,9 +66,9 @@ namespace TMS.API.Controllers
             ResponseDTO<TaskAssignmentResponseDTO> response = new ResponseDTO<TaskAssignmentResponseDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            TaskAssignmentResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            TaskAssignmentResponseDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var taskAssignment = await _taskAssignmentService.GetById(id);
@@ -113,9 +113,9 @@ namespace TMS.API.Controllers
             ResponseDTO<IEnumerable<TaskAssignmentResponseDTO>> response = new ResponseDTO<IEnumerable<TaskAssignmentResponseDTO>>();
             int StatusCode = 0;
             bool isSuccess = false;
-            IEnumerable<TaskAssignmentResponseDTO> Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            IEnumerable<TaskAssignmentResponseDTO>? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
 
             try
             {
@@ -239,8 +239,8 @@ namespace TMS.API.Controllers
             int StatusCode = 0;
             bool isSuccess = false;
             int Response = 0;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var taskAssignment = _mapper.Map<TaskAssignment>(taskAssignmentRequest);
@@ -283,9 +283,9 @@ namespace TMS.API.Controllers
             ResponseDTO<List<TaskAssignmentResponseDTO>> response = new ResponseDTO<List<TaskAssignmentResponseDTO>>();
             int StatusCode = 0;
             bool isSuccess = false;
-            List<TaskAssignmentResponseDTO> Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            List<TaskAssignmentResponseDTO>? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var taskAssignedToUser = await _taskAssignmentService.GetTaskAssignedToUser(userId);
@@ -332,8 +332,8 @@ namespace TMS.API.Controllers
             int StatusCode = 0;
             bool isSuccess = false;
             bool Response = false;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var isDeleted = await _taskAssignmentService.Delete(id);
@@ -379,9 +379,9 @@ namespace TMS.API.Controllers
             ResponseDTO<TaskResponseDTO> response = new ResponseDTO<TaskResponseDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            TaskResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            TaskResponseDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var result = await _taskService.GetById(id);
@@ -399,7 +399,6 @@ namespace TMS.API.Controllers
                     Message = "Task fetched successfully";
                     Response = task;
                 }
-
             }
             catch (Exception ex)
             {
@@ -427,9 +426,9 @@ namespace TMS.API.Controllers
             ResponseDTO<IEnumerable<TaskResponseDTO>> response = new ResponseDTO<IEnumerable<TaskResponseDTO>>();
             int StatusCode = 0;
             bool isSuccess = false;
-            IEnumerable<TaskResponseDTO> Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            IEnumerable<TaskResponseDTO>? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty  ;
 
             try
             {
@@ -474,8 +473,8 @@ namespace TMS.API.Controllers
             int StatusCode = 0;
             bool isSuccess = false;
             int Response = 0;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var task = _mapper.Map<Tasks>(taskRequest);
@@ -519,8 +518,8 @@ namespace TMS.API.Controllers
             int StatusCode = 0;
             bool isSuccess = false;
             int Response = 0;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var task = _mapper.Map<Tasks>(taskRequest);
@@ -565,8 +564,8 @@ namespace TMS.API.Controllers
             int StatusCode = 0;
             bool isSuccess = false;
             bool Response = false;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var isDeleted = await _taskService.Delete(id);
@@ -612,9 +611,9 @@ namespace TMS.API.Controllers
             ResponseDTO<TimeSheetApprovalResponseDTO> response = new ResponseDTO<TimeSheetApprovalResponseDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            TimeSheetApprovalResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            TimeSheetApprovalResponseDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var timeSheetApproval = await _timesheetApprovalsService.GetTimesheetApproval(id);
@@ -660,9 +659,9 @@ namespace TMS.API.Controllers
             ResponseDTO<IEnumerable<TimeSheetApprovalResponseDTO>> response = new ResponseDTO<IEnumerable<TimeSheetApprovalResponseDTO>>();
             int StatusCode = 0;
             bool isSuccess = false;
-            IEnumerable<TimeSheetApprovalResponseDTO> Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            IEnumerable<TimeSheetApprovalResponseDTO>? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
 
             try
             {
@@ -706,9 +705,9 @@ namespace TMS.API.Controllers
             ResponseDTO<TimeSheetApprovalResponseDTO> response = new ResponseDTO<TimeSheetApprovalResponseDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            TimeSheetApprovalResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            TimeSheetApprovalResponseDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var timeSheetApproval = _timesheetApprovalsService.GetTimeApprovalByTimeSheetId(timesheetMasterId);
@@ -754,9 +753,9 @@ namespace TMS.API.Controllers
             ResponseDTO<TimeSheetApprovalResponseDTO> response = new ResponseDTO<TimeSheetApprovalResponseDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            TimeSheetApprovalResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            TimeSheetApprovalResponseDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var currentUser = await _userResolverService.GetCurrentUser();
@@ -802,9 +801,9 @@ namespace TMS.API.Controllers
             ResponseDTO<TimeSheetApprovalResponseDTO> response = new ResponseDTO<TimeSheetApprovalResponseDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            TimeSheetApprovalResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            TimeSheetApprovalResponseDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var currentUser = await _userResolverService.GetCurrentUser();
@@ -853,8 +852,8 @@ namespace TMS.API.Controllers
             int StatusCode = 0;
             bool isSuccess = false;
             bool Response = false;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 bool isDeleted = await _timesheetApprovalsService.DeleteTimesheetApproval(id);
@@ -900,9 +899,9 @@ namespace TMS.API.Controllers
             ResponseDTO<TimesheetMasterResponseDTO> response = new ResponseDTO<TimesheetMasterResponseDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            TimesheetMasterResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            TimesheetMasterResponseDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var timesheetMasterId = await _timesheetMasterService.GetTimesheetMaster(id);
@@ -948,9 +947,9 @@ namespace TMS.API.Controllers
             ResponseDTO<IEnumerable<TimesheetMasterResponseDTO>> response = new ResponseDTO<IEnumerable<TimesheetMasterResponseDTO>>();
             int StatusCode = 0;
             bool isSuccess = false;
-            IEnumerable<TimesheetMasterResponseDTO> Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            IEnumerable<TimesheetMasterResponseDTO>? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var timeSheetMastersList = await _timesheetMasterService.GetTimesheetMastersAll();
@@ -999,9 +998,9 @@ namespace TMS.API.Controllers
             ResponseDTO<TimesheetMasterResponseDTO> response = new();
             int StatusCode = 0;
             bool isSuccess = false;
-            TimesheetMasterResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            TimesheetMasterResponseDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var timesheetMasterList = await _timesheetMasterService.GetByUserId(userId);
@@ -1080,9 +1079,9 @@ namespace TMS.API.Controllers
             ResponseDTO<TimesheetMasterResponseDTO> response = new ResponseDTO<TimesheetMasterResponseDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            TimesheetMasterResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            TimesheetMasterResponseDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 var timeSheet = _mapper.Map<TimeSheetMaster>(timeSheetRequest);
@@ -1137,9 +1136,9 @@ namespace TMS.API.Controllers
             ResponseDTO<TimesheetMasterResponseDTO> response = new ResponseDTO<TimesheetMasterResponseDTO>();
             int StatusCode = 0;
             bool isSuccess = false;
-            TimesheetMasterResponseDTO Response = null;
-            string Message = "";
-            string ExceptionMessage = "";
+            TimesheetMasterResponseDTO? Response = null;
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 int updatedTimeSheetId = _timesheetMasterService.UpdateTimesheetMaster(timesheetMaster);
@@ -1183,8 +1182,8 @@ namespace TMS.API.Controllers
             int StatusCode = 0;
             bool isSuccess = false;
             bool Response = false;
-            string Message = "";
-            string ExceptionMessage = "";
+            string Message = string.Empty;
+            string ExceptionMessage = string.Empty;
             try
             {
                 bool isDetailsDeleted = _timesheetDetailsService.DeleteByTimeSheetId(id);

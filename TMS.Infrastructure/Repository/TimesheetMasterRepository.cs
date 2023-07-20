@@ -31,7 +31,7 @@ namespace TMS.Infrastructure.Repository
 			bool isDeleted;
 			try
 			{
-                TimeSheetMaster timesheetMaster = await _unitOfWork.Context.TimeSheetMaster.Where(x => x.Id == id).FirstOrDefaultAsync();
+                TimeSheetMaster? timesheetMaster = await _unitOfWork.Context.TimeSheetMaster.Where(x => x.Id == id).FirstOrDefaultAsync();
                 _unitOfWork.Context.TimeSheetMaster.Remove(timesheetMaster);
                 _unitOfWork.Commit();
                 isDeleted = true;

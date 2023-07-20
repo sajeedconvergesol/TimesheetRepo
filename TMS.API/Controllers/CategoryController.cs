@@ -29,7 +29,7 @@ namespace TMS.API.Controllers
             ResponseDTO<Category> response = new ResponseDTO<Category>();
             int StatusCode = 0;
             bool isSuccess = false;
-            Category Response = null;
+            Category? Response = null;
             string Message = "";
             string ExceptionMessage = "";
             try
@@ -70,7 +70,7 @@ namespace TMS.API.Controllers
             ResponseDTO<IEnumerable<Category>> response = new ResponseDTO<IEnumerable<Category>>();
             int StatusCode = 0;
             bool isSuccess = false;
-            IEnumerable<Category> Response = null;
+            IEnumerable<Category>? Response = null;
             string Message = "";
             string ExceptionMessage = "";
             try
@@ -191,7 +191,7 @@ namespace TMS.API.Controllers
 
 
         [HttpDelete("{id}")]
-        public async Task<ResponseDTO<int>> DeleteTask(int id)
+        public async Task<ResponseDTO<int>> DeleteCategory(int id)
         {
             ResponseDTO<int> response = new ResponseDTO<int>();
             int StatusCode = 0;

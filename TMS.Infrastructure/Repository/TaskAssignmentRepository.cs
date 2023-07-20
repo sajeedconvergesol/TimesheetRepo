@@ -31,7 +31,7 @@ namespace TMS.Infrastructure.Repository
             bool isDeleted;
             try
             {
-                TaskAssignment taskAssignment = await _unitOfWork.Context.TaskAssignments.Where(x => x.Id == id).FirstOrDefaultAsync();
+                TaskAssignment? taskAssignment = await _unitOfWork.Context.TaskAssignments.Where(x => x.Id == id).FirstOrDefaultAsync();
                 _unitOfWork.Context.TaskAssignments.Remove(taskAssignment);
                 _unitOfWork.Commit();
                 isDeleted = true;

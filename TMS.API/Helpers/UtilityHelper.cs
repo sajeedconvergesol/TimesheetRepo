@@ -92,7 +92,7 @@ namespace TMS.API.Helpers
         public static string GetClientIPAddress(IPAddress iPAddress)
         {
             string ipAddress = string.Empty;
-            IPAddress ip = iPAddress;
+            IPAddress? ip = iPAddress;
             if (ip != null)
             {
                 if (ip.AddressFamily == AddressFamily.InterNetworkV6)

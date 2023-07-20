@@ -22,7 +22,7 @@ namespace TMS.Infrastructure.Repository
             bool isAdd;
             try
             {
-                _unitOfWork.Context.InvoiceDetails.AddRangeAsync(invoiceDetails);
+                await _unitOfWork.Context.InvoiceDetails.AddRangeAsync(invoiceDetails);
                 _unitOfWork.Commit();
                 isAdd = true;
             }
